@@ -1,0 +1,3498 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Event & Timer Studio | ระบบบริหารกิจกรรมและจับเวลาอัจฉริยะ</title>
+
+  <!-- Google Fonts: Prompt & Sarabun for readable Thai typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      --color-primary: #1e3a8a;
+      --color-secondary: #3b82f6;
+      --color-accent: #f59e0b;
+      --color-bg: #f8fafc;
+      --color-card: #ffffff;
+      --color-text: #0f172a;
+      --color-subtext: #475569;
+      --color-border: #e2e8f0;
+      --color-header: #172554;
+      --color-nav: #1e40af;
+      --color-button: #2563eb;
+      --color-footer: #0f172a;
+      --color-pill-bg: #f1f5f9;
+      --color-pill-text: #475569;
+      --color-pill-border: #e2e8f0;
+      --color-pill-hover: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.6);
+    }
+
+    .theme-primary-bg { background-color: var(--color-primary); }
+    .theme-primary-text { color: var(--color-primary); }
+    .theme-primary-border { border-color: var(--color-primary); }
+
+    .theme-secondary-bg { background-color: var(--color-secondary); }
+    .theme-secondary-text { color: var(--color-secondary); }
+
+    .theme-accent-bg { background-color: var(--color-accent); }
+    .theme-accent-text { color: var(--color-accent); }
+
+    .theme-card-bg { 
+      background-color: var(--color-card) !important; 
+      color: var(--color-text) !important;
+      border-color: var(--color-border) !important;
+    }
+    .theme-header-bg { background-color: var(--color-header); }
+    .theme-nav-bg { background-color: var(--color-nav); }
+    .theme-button-bg { background-color: var(--color-button); }
+    .theme-footer-bg { background-color: var(--color-footer); }
+
+    /* Elevation & smooth shadows */
+    .soft-shadow {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    }
+    .hover-lift {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pulse animation for active sync status */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .animate-pulse-dot {
+      animation: pulse-dot 1.8s infinite ease-in-out;
+    }
+
+    /* Category Filter Pills - Universal Contrast Styling */
+    .cat-pill {
+      padding: 0.5rem 1.15rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background-color: var(--color-pill-bg);
+      color: var(--color-pill-text);
+      border: 1px solid var(--color-pill-border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .cat-pill:hover {
+      background-color: var(--color-pill-hover);
+      color: var(--color-text);
+    }
+    .cat-pill.active {
+      background-color: var(--color-primary) !important;
+      color: #ffffff !important;
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 4px 14px rgba(30, 58, 138, 0.28);
+    }
+
+    /* Card secondary buttons */
+    .btn-card-secondary {
+      background-color: var(--color-pill-bg);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      transition: all 0.2s ease;
+    }
+    .btn-card-secondary:hover {
+      background-color: var(--color-pill-hover);
+    }
+
+    /* Calendar switcher button */
+    .cal-tab-btn {
+      transition: all 0.2s ease;
+      color: var(--color-subtext);
+    }
+    .cal-tab-btn:hover {
+      color: var(--color-text);
+    }
+    .cal-tab-btn.active {
+      background-color: #ffffff;
+      color: var(--color-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      font-weight: 700;
+    }
+
+    /* High contrast button in Hero banner */
+    #hero-view-details-btn {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+    }
+    #hero-view-details-btn i {
+      color: #2563eb !important;
+    }
+
+    /* Dynamic Hero Section Background Cover */
+    #hero-featured-container {
+      position: relative;
+      overflow: hidden;
+    }
+    #hero-bg-cover {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(8px);
+      transform: scale(1.08);
+      transition: background-image 0.8s ease-in-out;
+      z-index: 0;
+    }
+    #hero-bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(11, 15, 25, 0.94) 0%, rgba(15, 23, 42, 0.85) 55%, rgba(15, 23, 42, 0.65) 100%);
+      backdrop-filter: blur(2px);
+      z-index: 1;
+    }
+
+    /* Timer Navigation Buttons & Total Badge Contrast Overrides */
+    .btn-timer-nav {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      transition: all 0.2s ease;
+    }
+    .btn-timer-nav:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+    }
+
+    #total-stages-time-badge {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Dark Mode Contrast Support (Strict High-Contrast Overrides) */
+    .theme-dark-mode {
+      --color-subtext: #94a3b8;
+      --color-border: rgba(255, 255, 255, 0.12);
+      --color-pill-bg: rgba(255, 255, 255, 0.08);
+      --color-pill-text: #cbd5e1;
+      --color-pill-border: rgba(255, 255, 255, 0.14);
+      --color-pill-hover: rgba(255, 255, 255, 0.16);
+      color-scheme: dark;
+    }
+
+    .theme-dark-mode .cat-pill.active {
+      background-color: var(--color-secondary) !important;
+      color: #ffffff !important;
+      border-color: var(--color-secondary) !important;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    }
+
+    .theme-dark-mode .cal-tab-btn.active {
+      background-color: var(--color-primary) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .theme-dark-mode .text-slate-900,
+    .theme-dark-mode .text-slate-800,
+    .theme-dark-mode .text-slate-700 {
+      color: #f8fafc !important;
+    }
+
+    .theme-dark-mode .text-slate-600,
+    .theme-dark-mode .text-slate-500 {
+      color: #cbd5e1 !important;
+    }
+
+    .theme-dark-mode .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+
+    .theme-dark-mode .bg-white {
+      background-color: var(--color-card) !important;
+      color: var(--color-text) !important;
+    }
+
+    .theme-dark-mode .bg-slate-50,
+    .theme-dark-mode .bg-slate-100 {
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      color: #f8fafc !important;
+    }
+
+    .theme-dark-mode .border-slate-200,
+    .theme-dark-mode .border-slate-100,
+    .theme-dark-mode .border-slate-300 {
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .theme-dark-mode .divide-slate-100 > * + *,
+    .theme-dark-mode .divide-slate-200 > * + * {
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .theme-dark-mode .btn-timer-nav {
+      background-color: rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    }
+    .theme-dark-mode .btn-timer-nav:hover {
+      background-color: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    .theme-dark-mode #total-stages-time-badge {
+      background-color: rgba(59, 130, 246, 0.2) !important;
+      color: #60a5fa !important;
+      border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    }
+
+    .theme-dark-mode #timer-reset-btn {
+      background-color: rgba(244, 63, 94, 0.16) !important;
+      color: #fb7185 !important;
+      border: 1px solid rgba(244, 63, 94, 0.35) !important;
+    }
+
+    .theme-dark-mode input[type="text"],
+    .theme-dark-mode input[type="password"],
+    .theme-dark-mode input[type="datetime-local"],
+    .theme-dark-mode input[type="number"],
+    .theme-dark-mode select,
+    .theme-dark-mode textarea {
+      background-color: #0b1120 !important;
+      color: #f8fafc !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    .theme-dark-mode .bg-slate-50\/50,
+    .theme-dark-mode .bg-slate-50\/80 {
+      background-color: rgba(15, 23, 42, 0.75) !important;
+    }
+
+    /* Fullscreen Projector Mode (High-Contrast Digital Display) */
+    .presentation-active {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 99999 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: #060b17 !important;
+      color: #ffffff !important;
+      padding: 2rem 3rem !important;
+      overflow-y: auto !important;
+      border-radius: 0 !important;
+    }
+    .presentation-active #digital-clock-display {
+      color: #ffffff !important;
+      text-shadow: 0 0 45px rgba(59, 130, 246, 0.75), 0 0 15px rgba(255, 255, 255, 0.4) !important;
+    }
+    .presentation-active .text-slate-900,
+    .presentation-active .text-slate-800,
+    .presentation-active .text-slate-700 {
+      color: #f8fafc !important;
+    }
+    .presentation-active .text-slate-600,
+    .presentation-active .text-slate-500,
+    .presentation-active .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+    .presentation-active #stage-time-remaining,
+    .presentation-active #total-time-elapsed {
+      color: #38bdf8 !important;
+    }
+    .presentation-active #progress-percentage-text {
+      color: #ffffff !important;
+    }
+    .presentation-active #current-stage-title {
+      color: #60a5fa !important;
+    }
+    .presentation-active #stages-cards-list > div {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.16) !important;
+      color: #f8fafc !important;
+    }
+    .presentation-active #stages-cards-list > div .text-blue-700,
+    .presentation-active #stages-cards-list > div .text-blue-600,
+    .presentation-active #stages-cards-list > div .text-slate-800,
+    .presentation-active #stages-cards-list > div .text-slate-700 {
+      color: #ffffff !important;
+    }
+
+    /* Explicit styling for the 3 buttons in Projector Presentation Mode */
+    .presentation-active .btn-timer-nav {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    }
+    .presentation-active .btn-timer-nav:hover {
+      background-color: rgba(255, 255, 255, 0.28) !important;
+    }
+
+    .presentation-active #total-stages-time-badge {
+      background-color: rgba(59, 130, 246, 0.25) !important;
+      color: #93c5fd !important;
+      border: 1px solid rgba(59, 130, 246, 0.45) !important;
+    }
+
+    .presentation-active #timer-reset-btn {
+      background-color: rgba(244, 63, 94, 0.2) !important;
+      color: #fda4af !important;
+      border: 1px solid rgba(244, 63, 94, 0.4) !important;
+    }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    window.__fbModules = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, doc, setDoc, getDoc, collection, onSnapshot };
+  </script>
+</head>
+
+<body class="flex flex-col min-h-screen">
+  <!-- Firebase Config Slot for GitHub Pages Real-time sync -->
+  <script>
+    const MY_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC5KNYalAoh8eW2TOGLgnflUsei1WTIojA",
+  authDomain: "academic-timer.firebaseapp.com",
+  projectId: "academic-timer",
+  storageBucket: "academic-timer.firebasestorage.app",
+  messagingSenderId: "334170447160",
+  appId: "1:334170447160:web:12da632aed442c0190b5cd"
+};
+  </script>
+
+  <!-- ======================================================== -->
+  <!-- MAIN HEADER & NAVIGATION                                -->
+  <!-- ======================================================== -->
+  <header id="main-header" class="theme-header-bg text-white sticky top-0 z-40 shadow-md transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Logo & Website Title -->
+        <div class="flex items-center space-x-3 cursor-pointer select-none" onclick="app.switchTab('dashboard')">
+          <div id="site-logo-container" class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden shadow-inner border border-white/20">
+            <svg id="default-logo-svg" class="w-6 h-6 sm:w-7 sm:h-7 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+            </svg>
+            <img id="custom-logo-img" src="" alt="Site Logo" class="hidden w-full h-full object-contain p-1" />
+          </div>
+          <div>
+            <h1 id="site-title-display" class="font-bold text-base sm:text-xl tracking-tight leading-tight">
+              Academic Event &amp; Timer Studio
+            </h1>
+            <p id="site-subtitle-display" class="text-xs text-blue-200 hidden sm:block">
+              ระบบบริหารกิจกรรมและจับเวลาอัจฉริยะ
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Clock & Device Sync Indicator -->
+        <div class="hidden md:flex items-center space-x-4 text-xs lg:text-sm bg-black/30 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
+          <div class="flex items-center space-x-1.5">
+            <span id="cloud-sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse-dot"></span>
+            <span id="cloud-sync-text" class="text-emerald-300 font-bold">ซิงค์เรียลไทม์</span>
+          </div>
+          <span class="text-white/40">|</span>
+          <div class="flex items-center space-x-2 text-white/90">
+            <i class="fa-regular fa-calendar text-amber-400"></i>
+            <span id="header-live-date">วันจันทร์ที่ 21 ก.ย. 2569</span>
+          </div>
+          <span class="text-white/40">|</span>
+          <div class="flex items-center space-x-1 font-mono text-amber-300 font-bold tracking-wider">
+            <i class="fa-regular fa-clock text-amber-400"></i>
+            <span id="header-live-time">20:27:30</span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Desktop) -->
+        <nav class="hidden lg:flex items-center space-x-1.5">
+          <button onclick="app.switchTab('dashboard')" id="nav-btn-dashboard" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 bg-white/20 text-white shadow-sm">
+            <i class="fa-solid fa-hourglass-half text-amber-300"></i>
+            <span>รวมกิจกรรม</span>
+          </button>
+          <button onclick="app.switchTab('calendar')" id="nav-btn-calendar" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-white/80 hover:bg-white/10 hover:text-white">
+            <i class="fa-regular fa-calendar-days text-sky-300"></i>
+            <span>ปฏิทินกิจกรรม</span>
+          </button>
+          <button onclick="app.switchTab('timer')" id="nav-btn-timer" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-white/80 hover:bg-white/10 hover:text-white">
+            <i class="fa-solid fa-stopwatch text-emerald-300"></i>
+            <span>นาฬิกาสอบสอน</span>
+          </button>
+          <button onclick="app.switchTab('admin')" id="nav-btn-admin" class="px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-amber-300 hover:bg-white/10">
+            <i class="fa-solid fa-user-shield"></i>
+            <span id="nav-admin-label">แดชบอร์ดผู้ดูแล (Active)</span>
+          </button>
+        </nav>
+
+        <!-- Mobile Menu Toggle Button -->
+        <div class="flex items-center space-x-2 lg:hidden">
+          <button onclick="app.toggleMobileMenu()" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white focus:outline-none" aria-label="Toggle Navigation">
+            <i id="mobile-menu-icon" class="fa-solid fa-bars text-xl"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div id="mobile-drawer" class="hidden lg:hidden border-t border-white/10 bg-slate-900 px-4 pt-3 pb-5 space-y-2">
+      <button onclick="app.switchTab('dashboard'); app.toggleMobileMenu(false);" class="w-full text-left px-3.5 py-3 rounded-xl text-sm font-medium flex items-center space-x-3 text-white bg-white/10">
+        <i class="fa-solid fa-hourglass-half text-amber-400 w-5"></i>
+        <span>รวมกิจกรรม (Countdown)</span>
+      </button>
+      <button onclick="app.switchTab('calendar'); app.toggleMobileMenu(false);" class="w-full text-left px-3.5 py-3 rounded-xl text-sm font-medium flex items-center space-x-3 text-white hover:bg-white/10">
+        <i class="fa-regular fa-calendar-days text-sky-400 w-5"></i>
+        <span>ปฏิทินกิจกรรม (Calendar)</span>
+      </button>
+      <button onclick="app.switchTab('timer'); app.toggleMobileMenu(false);" class="w-full text-left px-3.5 py-3 rounded-xl text-sm font-medium flex items-center space-x-3 text-white hover:bg-white/10">
+        <i class="fa-solid fa-stopwatch text-emerald-400 w-5"></i>
+        <span>นาฬิกาสอบสอน (Teaching Timer)</span>
+      </button>
+      <button onclick="app.switchTab('admin'); app.toggleMobileMenu(false);" class="w-full text-left px-3.5 py-3 rounded-xl text-sm font-bold flex items-center space-x-3 text-amber-300 hover:bg-white/10">
+        <i class="fa-solid fa-user-shield text-amber-400 w-5"></i>
+        <span>แดชบอร์ดผู้ดูแล (Admin)</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: EVENT COUNTDOWN DASHBOARD                        -->
+    <!-- ======================================================== -->
+    <section id="tab-dashboard" class="space-y-8 animate-fade-in block">
+      
+      <!-- Hero Section: Dynamic Cover & Real-time Live Countdown -->
+      <div id="hero-featured-container" class="rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 text-white min-h-[340px] flex items-center border border-slate-700/60">
+        <div id="hero-bg-cover" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&q=80');"></div>
+        <div id="hero-bg-overlay"></div>
+
+        <div class="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Left side: Information -->
+          <div class="lg:col-span-7 space-y-4 text-center lg:text-left">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              <i class="fa-solid fa-star"></i>
+              <span id="hero-badge-title">กิจกรรมสำคัญที่ใกล้ถึงที่สุด (Nearest Upcoming Event)</span>
+            </div>
+
+            <h2 id="hero-event-title" class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight drop-shadow-md">
+              กำลังโหลดข้อมูลกิจกรรม...
+            </h2>
+
+            <p id="hero-event-desc" class="text-slate-200 text-sm sm:text-base line-clamp-2 max-w-2xl drop-shadow">
+              ระบบกำลังเชื่อมโยงข้อมูลกับปฏิทินส่วนกลางและซิงโครไนซ์เวลานับถอยหลัง
+            </p>
+
+            <div class="flex flex-wrap gap-2.5 sm:gap-3 text-xs sm:text-sm text-slate-200 justify-center lg:justify-start pt-1">
+              <div class="flex items-center bg-black/50 px-3.5 py-2 rounded-xl border border-white/10 backdrop-blur-md">
+                <i class="fa-regular fa-calendar text-amber-400 mr-2"></i>
+                <span id="hero-event-date">-</span>
+              </div>
+              <div class="flex items-center bg-black/50 px-3.5 py-2 rounded-xl border border-white/10 backdrop-blur-md">
+                <i class="fa-solid fa-location-dot text-rose-400 mr-2"></i>
+                <span id="hero-event-location">-</span>
+              </div>
+              <div class="flex items-center bg-black/50 px-3.5 py-2 rounded-xl border border-white/10 backdrop-blur-md">
+                <i class="fa-solid fa-building-columns text-sky-400 mr-2"></i>
+                <span id="hero-event-dept">-</span>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-wrap gap-3 justify-center lg:justify-start pt-3">
+              <button id="hero-view-details-btn" class="px-6 py-2.5 rounded-xl font-bold shadow-xl flex items-center space-x-2 transition hover:bg-slate-100">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>ดูรายละเอียด</span>
+              </button>
+              <button id="hero-google-cal-btn" class="px-5 py-2.5 rounded-xl font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xl flex items-center space-x-2 transition">
+                <i class="fa-brands fa-google"></i>
+                <span>ตั้งเตือนใน Google Cal</span>
+              </button>
+              <button id="hero-share-btn" class="px-5 py-2.5 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-xl flex items-center space-x-2 transition">
+                <i class="fa-solid fa-share-nodes"></i>
+                <span>แชร์ / ปักหมุด</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right side: Big Countdown Timer -->
+          <div class="lg:col-span-5 flex justify-center">
+            <div class="bg-black/60 backdrop-blur-2xl rounded-3xl p-6 sm:p-7 border border-white/15 shadow-2xl w-full max-w-sm text-center">
+              <span class="text-xs uppercase tracking-widest text-slate-300 font-bold mb-4 flex items-center justify-center">
+                <i class="fa-regular fa-clock text-amber-400 mr-2"></i>เวลานับถอยหลังสู่กิจกรรม
+              </span>
+              
+              <div class="grid grid-cols-4 gap-2.5 mt-4">
+                <div class="bg-white/10 rounded-2xl p-3 border border-white/5">
+                  <div id="hero-days" class="text-3xl sm:text-4xl font-mono font-black text-amber-400">00</div>
+                  <div class="text-[11px] text-slate-300 font-medium mt-1">วัน</div>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-3 border border-white/5">
+                  <div id="hero-hours" class="text-3xl sm:text-4xl font-mono font-black text-white">00</div>
+                  <div class="text-[11px] text-slate-300 font-medium mt-1">ชม.</div>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-3 border border-white/5">
+                  <div id="hero-minutes" class="text-3xl sm:text-4xl font-mono font-black text-white">00</div>
+                  <div class="text-[11px] text-slate-300 font-medium mt-1">นาที</div>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-3 border border-white/5">
+                  <div id="hero-seconds" class="text-3xl sm:text-4xl font-mono font-black text-emerald-400">00</div>
+                  <div class="text-[11px] text-slate-300 font-medium mt-1">วิ.</div>
+                </div>
+              </div>
+
+              <!-- Status Pill -->
+              <div id="hero-status-pill" class="mt-6 inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <i class="fa-solid fa-clock mr-2"></i>
+                <span id="hero-status-text">กำลังจะมาถึง</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="theme-card-bg p-5 rounded-2xl soft-shadow border flex items-center justify-between">
+          <div>
+            <div class="text-xs text-slate-500 font-medium">กิจกรรมทั้งหมด</div>
+            <div id="stat-total-events" class="text-2xl sm:text-3xl font-bold mt-1">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+        </div>
+
+        <div class="theme-card-bg p-5 rounded-2xl soft-shadow border flex items-center justify-between">
+          <div>
+            <div class="text-xs text-slate-500 font-medium">กำลังจะมาถึง</div>
+            <div id="stat-upcoming-events" class="text-2xl sm:text-3xl font-bold text-amber-500 mt-1">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+        </div>
+
+        <div class="theme-card-bg p-5 rounded-2xl soft-shadow border flex items-center justify-between ring-2 ring-emerald-500/40">
+          <div>
+            <div class="text-xs text-slate-500 font-medium">กำลังดำเนินการ</div>
+            <div id="stat-ongoing-events" class="text-2xl sm:text-3xl font-bold text-emerald-500 mt-1">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-circle-play"></i>
+          </div>
+        </div>
+
+        <div class="theme-card-bg p-5 rounded-2xl soft-shadow border flex items-center justify-between">
+          <div>
+            <div class="text-xs text-slate-500 font-medium">สิ้นสุดแล้ว</div>
+            <div id="stat-completed-events" class="text-2xl sm:text-3xl font-bold text-slate-400 mt-1">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters & Controls -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
+        <div class="flex flex-wrap gap-2 w-full sm:w-auto" id="category-filter-pills">
+          <button onclick="app.setCategoryFilter('ALL')" data-cat="ALL" class="cat-pill active">ทั้งหมด</button>
+          <button onclick="app.setCategoryFilter('ACADEMIC')" data-cat="ACADEMIC" class="cat-pill">วิชาการ</button>
+          <button onclick="app.setCategoryFilter('TEACHING_EXAM')" data-cat="TEACHING_EXAM" class="cat-pill">สอบสอน</button>
+          <button onclick="app.setCategoryFilter('CONFERENCE')" data-cat="CONFERENCE" class="cat-pill">สัมมนา</button>
+          <button onclick="app.setCategoryFilter('WORKSHOP')" data-cat="WORKSHOP" class="cat-pill">อบรมเชิงปฏิบัติการ</button>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div class="relative flex-1 sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+            <input type="text" id="event-search-input" oninput="app.filterEvents()" placeholder="ค้นหากิจกรรม..." class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-300 outline-none" />
+          </div>
+          <select id="event-status-filter" onchange="app.filterEvents()" class="text-xs py-2 px-3 rounded-xl border border-slate-300 outline-none bg-white">
+            <option value="ALL">ทุกสถานะ</option>
+            <option value="UPCOMING">กำลังจะมาถึง</option>
+            <option value="ONGOING">กำลังดำเนินการ</option>
+            <option value="COMPLETED">สิ้นสุดแล้ว</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Events Cards Grid -->
+      <div id="events-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <div id="no-events-placeholder" class="hidden text-center py-16 theme-card-bg rounded-2xl border border-dashed border-slate-300">
+        <i class="fa-regular fa-calendar-xmark text-4xl text-slate-400 mb-3"></i>
+        <h3 class="text-base font-semibold text-slate-700">ไม่พบข้อมูลกิจกรรมที่ตรงกับเงื่อนไข</h3>
+        <p class="text-xs text-slate-500 mt-1">ลองเปลี่ยนคำค้นหา หรือรีเซ็ตตัวกรองหมวดหมู่</p>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: SMART ACADEMIC CALENDAR                          -->
+    <!-- ======================================================== -->
+    <section id="tab-calendar" class="hidden space-y-6 animate-fade-in">
+      
+      <!-- Top Calendar Header Toolbar -->
+      <div class="theme-card-bg p-4 sm:p-5 rounded-2xl soft-shadow border flex flex-col xl:flex-row justify-between items-center gap-4">
+        
+        <!-- Left: Previous / Today / Next & Date Label -->
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto justify-center xl:justify-start">
+          <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-sm shrink-0">
+            <button onclick="calendarView.prev()" class="px-3.5 py-2 rounded-lg text-slate-600 hover:bg-white transition" title="ก่อนหน้า">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="calendarView.today()" class="px-5 py-2 rounded-lg font-bold text-xs sm:text-sm text-slate-800 hover:bg-white transition">
+              วันนี้
+            </button>
+            <button onclick="calendarView.next()" class="px-3.5 py-2 rounded-lg text-slate-600 hover:bg-white transition" title="ถัดไป">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Dynamic Period Label (พ.ศ.) -->
+          <h2 id="calendar-month-year-title" class="text-lg sm:text-2xl font-bold text-slate-800 text-center xl:text-left min-w-[220px]">
+            กันยายน 2569
+          </h2>
+        </div>
+
+        <!-- Right: View Switcher (Month, Week, Day, Agenda) -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-sm overflow-x-auto w-full xl:w-auto justify-start sm:justify-center shrink-0">
+          <button onclick="calendarView.setViewMode('month')" id="cal-mode-month" class="cal-tab-btn active px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition whitespace-nowrap">รายเดือน</button>
+          <button onclick="calendarView.setViewMode('week')" id="cal-mode-week" class="cal-tab-btn px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap">รายสัปดาห์</button>
+          <button onclick="calendarView.setViewMode('day')" id="cal-mode-day" class="cal-tab-btn px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap">รายวัน</button>
+          <button onclick="calendarView.setViewMode('agenda')" id="cal-mode-agenda" class="cal-tab-btn px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap">กำหนดการ</button>
+        </div>
+
+      </div>
+
+      <!-- Calendar Viewport (100% Full Width) -->
+      <div class="theme-card-bg rounded-2xl soft-shadow border overflow-hidden w-full overflow-x-auto">
+        <div id="calendar-viewport" class="w-full min-w-[760px] md:min-w-full">
+          <!-- 1. Month View Grid -->
+          <div id="cal-view-month-container" class="block">
+            <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50/80 text-center py-2.5 text-xs font-bold text-slate-600">
+              <div class="text-rose-500">อาทิตย์</div>
+              <div>จันทร์</div>
+              <div>อังคาร</div>
+              <div>พุธ</div>
+              <div>พฤหัสบดี</div>
+              <div>ศุกร์</div>
+              <div class="text-sky-600">เสาร์</div>
+            </div>
+            <div id="calendar-days-grid" class="grid grid-cols-7 divide-x divide-y divide-slate-100"></div>
+          </div>
+
+          <!-- 2. Week View -->
+          <div id="cal-view-week-container" class="hidden overflow-x-auto">
+            <div id="calendar-week-grid" class="w-full grid grid-cols-7 divide-x divide-slate-200 border-b border-slate-200 min-h-[420px]"></div>
+          </div>
+
+          <!-- 3. Day View -->
+          <div id="cal-view-day-container" class="hidden p-6 space-y-4">
+            <div id="calendar-day-content" class="space-y-3"></div>
+          </div>
+
+          <!-- 4. Agenda View -->
+          <div id="cal-view-agenda-container" class="hidden p-6 space-y-4">
+            <div id="calendar-agenda-list" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500 px-2">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="font-bold text-slate-800">คำอธิบายสี:</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span>วิชาการ</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span>สอบสอน</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 mr-1.5"></span>อบรมเชิงปฏิบัติการ</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span>สัมมนา</span>
+        </div>
+        <div>
+          <span>คลิกที่กิจกรรมเพื่อดูรายละเอียด หรือคลิกวันที่เพื่อเพิ่มกิจกรรม (สิทธิ์แอดมิน)</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: TEACHING EXAMINATION TIMER                       -->
+    <!-- ======================================================== -->
+    <section id="tab-timer" class="hidden space-y-6 animate-fade-in">
+      
+      <!-- Top Bar: Current Student Candidate & Mode Controls (Syncing with Site Logo) -->
+      <div class="theme-card-bg p-4 sm:p-5 rounded-2xl soft-shadow border border-slate-200/60 flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Left: Candidate Information & Dynamic Unified Site Logo -->
+        <div class="flex items-center space-x-3.5 w-full md:w-auto">
+          <div id="timer-site-logo-container" class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl shadow-md shrink-0 overflow-hidden border border-blue-500/30">
+            <svg id="timer-default-logo-svg" class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+            </svg>
+            <img id="timer-custom-logo-img" src="" alt="Timer Logo" class="hidden w-full h-full object-contain p-1" />
+          </div>
+          <div>
+            <div class="text-[11px] text-slate-400 font-medium">รอบการสอบสอนปัจจุบัน</div>
+            <h3 id="timer-student-name" class="text-base sm:text-lg font-bold text-slate-800 leading-tight">
+              นางสาวศิริพร ปัญญาไว (คณิตศาสตร์ ม.3)
+            </h3>
+            <p id="timer-student-topic" class="text-xs text-slate-500 mt-0.5">
+              หัวข้อ: ทฤษฎีบทพีทาโกรัสกับการแก้โจทย์ปัญหาในชีวิตประจำวัน
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Audio, Public/Controller Switch, & Projector -->
+        <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
+          
+          <!-- Sound Toggle Button -->
+          <button id="timer-sound-toggle-btn" onclick="timerEngine.toggleSound()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center space-x-1.5 shadow-sm">
+            <i id="timer-sound-icon" class="fa-solid fa-volume-high"></i>
+            <span id="timer-sound-label">เสียง: เปิด</span>
+          </button>
+
+          <!-- Segmented Pill: Public Display vs Controller View -->
+          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 text-xs font-semibold shadow-inner">
+            <button onclick="timerEngine.setViewMode('public')" id="timer-mode-btn-public" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+              Public Display
+            </button>
+            <button onclick="timerEngine.setViewMode('controller')" id="timer-mode-btn-controller" class="px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 transition font-bold">
+              Controller View
+            </button>
+          </div>
+
+          <!-- Projector Fullscreen Button -->
+          <button onclick="timerEngine.togglePresentationMode()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-black text-white transition flex items-center space-x-1.5 shadow-md">
+            <i class="fa-solid fa-expand"></i>
+            <span>Projector Fullscreen</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Main Showcase Card (Analog + Digital) -->
+      <div id="timer-showcase-box" class="theme-card-bg rounded-3xl soft-shadow border border-slate-200/60 p-6 sm:p-8 lg:p-10 transition-all duration-300 relative">
+        
+        <!-- Dedicated Presentation Header with Exit Button & Site Logo -->
+        <div id="presentation-candidate-header" class="hidden pb-4 mb-6 border-b border-white/15 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 w-full">
+          <div class="flex items-center space-x-3.5">
+            <div id="pres-site-logo-container" class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-xl shadow-md shrink-0 overflow-hidden border border-white/20">
+              <svg id="pres-default-logo-svg" class="w-7 h-7 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+              </svg>
+              <img id="pres-custom-logo-img" src="" alt="Presentation Logo" class="hidden w-full h-full object-contain p-1" />
+            </div>
+            <div>
+              <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-1">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                <span>โหมดฉายโปรเจกเตอร์ (PROJECTOR DISPLAY VIEW)</span>
+              </span>
+              <h3 id="presentation-student-title" class="text-lg sm:text-2xl font-black text-white leading-tight">
+                นางสาวศิริพร ปัญญาไว (คณิตศาสตร์ ม.3)
+              </h3>
+              <p id="presentation-student-topic" class="text-xs text-slate-300 mt-0.5">
+                หัวข้อ: ทฤษฎีบทพีทาโกรัสกับการแก้โจทย์ปัญหาในชีวิตประจำวัน
+              </p>
+            </div>
+          </div>
+          <button onclick="timerEngine.togglePresentationMode()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm shadow-xl flex items-center space-x-2 transition border border-white/20 shrink-0 cursor-pointer">
+            <i class="fa-solid fa-compress"></i>
+            <span>ยุบหน้าต่าง (ออกจากการขยาย)</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Left: Responsive Analog Clock Canvas with colorful stage rings -->
+          <div class="lg:col-span-5 flex flex-col items-center justify-center">
+            <div class="relative w-64 h-64 sm:w-80 sm:h-80 max-w-full">
+              <canvas id="analog-clock-canvas" width="400" height="400" class="w-full h-full drop-shadow-md"></canvas>
+            </div>
+            <div class="mt-3 text-xs text-slate-400 text-center font-medium">
+              นาฬิกาอนาล็อกจำลองมุมมองแบบเข็มเรียลไทม์
+            </div>
+          </div>
+
+          <!-- Right: Active Stage, Digital Countdown, & Controller Buttons -->
+          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+            
+            <!-- Current Stage Pill -->
+            <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-blue-50 text-blue-600 border border-blue-200">
+              <span id="current-stage-title">ขั้นตอนที่ 1: ขั้นสร้างความสนใจ (Engagement)</span>
+            </div>
+
+            <!-- Big Digital Numbers (MM:SS) -->
+            <div>
+              <div id="digital-clock-display" class="font-mono text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-slate-900 transition-colors duration-300">
+                15 : 00
+              </div>
+              <div class="flex items-center justify-center lg:justify-start space-x-3 text-xs sm:text-sm font-medium text-slate-500 mt-2">
+                <span>เวลาคงเหลือของขั้นตอน: <strong id="stage-time-remaining" class="text-slate-800 font-mono">02:00</strong></span>
+                <span class="text-slate-300">•</span>
+                <span>เวลารวมที่ผ่านไป: <strong id="total-time-elapsed" class="text-slate-800 font-mono">00:00</strong></span>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs text-slate-500 font-medium">
+                <span>ความคืบหน้ารอบสอบสอน</span>
+                <span id="progress-percentage-text" class="font-bold">0%</span>
+              </div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                <div id="timer-progress-bar" class="h-full bg-blue-600 rounded-full transition-all duration-300 w-0"></div>
+              </div>
+            </div>
+
+            <!-- Controller Buttons Row (With Explicit High-Contrast Fix) -->
+            <div id="timer-controller-panel" class="pt-2">
+              <div class="flex flex-wrap gap-2.5 items-center justify-center lg:justify-start">
+                
+                <!-- Start / Pause / Resume Button -->
+                <button id="timer-main-action-btn" onclick="timerEngine.toggleRun()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition flex items-center space-x-2">
+                  <i id="timer-main-icon" class="fa-solid fa-play"></i>
+                  <span id="timer-main-text">เริ่มจับเวลา</span>
+                </button>
+
+                <!-- Reset Button -->
+                <button id="timer-reset-btn" onclick="timerEngine.confirmReset()" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-sm transition border border-rose-200 flex items-center space-x-1.5">
+                  <i class="fa-solid fa-rotate-left"></i>
+                  <span>รีเซ็ตเวลา</span>
+                </button>
+
+                <!-- Previous Stage Button (Clean & High Contrast) -->
+                <button id="timer-prev-stage-btn" onclick="timerEngine.prevStage()" class="btn-timer-nav px-3.5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-1">
+                  <i class="fa-solid fa-backward-step mr-1"></i>
+                  <span>ขั้นก่อนหน้า</span>
+                </button>
+
+                <!-- Next Stage Button (Clean & High Contrast) -->
+                <button id="timer-next-stage-btn" onclick="timerEngine.nextStage()" class="btn-timer-nav px-3.5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center space-x-1">
+                  <span>ขั้นถัดไป</span>
+                  <i class="fa-solid fa-forward-step ml-1"></i>
+                </button>
+
+              </div>
+            </div>
+
+            <!-- Public View Notice -->
+            <div id="timer-public-notice" class="hidden text-xs text-slate-400 pt-2 italic">
+              * ท่านกำลังอยู่ในโหมดผู้ชม (Public Display View) ตัวควบคุมถูกซ่อนเพื่อป้องกันการเปลี่ยนเวลาโดยไม่ตั้งใจ
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Instructional Stages (5E Model Breakdown) -->
+        <div class="mt-10 pt-6 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-2">
+              <i class="fa-solid fa-bars text-blue-600"></i>
+              <span>ลำดับขั้นตอนการสอน (TEACHING STAGES)</span>
+            </h4>
+            <span id="total-stages-time-badge" class="text-xs px-3 py-1 rounded-lg font-semibold">
+              เวลารวม 15 นาที
+            </span>
+          </div>
+
+          <!-- 5-Card Grid matching user screenshot -->
+          <div id="stages-cards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: ADMIN MANAGEMENT DASHBOARD                       -->
+    <!-- ======================================================== -->
+    <section id="tab-admin" class="hidden space-y-8 animate-fade-in">
+      
+      <!-- Admin Login Screen -->
+      <div id="admin-login-screen" class="max-w-md mx-auto my-12 theme-card-bg p-8 rounded-3xl soft-shadow border text-center">
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-6 transform rotate-3">
+          <i class="fa-solid fa-lock text-3xl text-white -rotate-3"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-1">เข้าสู่ระบบผู้ดูแล</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mb-6">สำหรับอาจารย์และผู้ดูแลระบบในการจัดการกิจกรรมและนาฬิกา</p>
+
+        <form onsubmit="adminAuth.handleLogin(event)" class="space-y-4">
+          <div class="text-left">
+            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1">รหัสผ่านผู้ดูแลระบบ</label>
+            <div class="relative">
+              <input type="password" id="admin-password-input" class="w-full px-4 py-3 rounded-xl border outline-none text-sm" placeholder="กรอกรหัสผ่าน..." required />
+              <button type="button" onclick="adminAuth.togglePasswordVisibility()" class="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600">
+                <i id="pwd-eye-icon" class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div id="login-error-msg" class="hidden text-xs text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200"></div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition">
+            เข้าสู่ระบบผู้ดูแล
+          </button>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-slate-100 text-[11px] text-slate-400 text-left">
+          * เพื่อความปลอดภัย ระบบใช้การเข้ารหัสแบบทางเดียว (Hash) ห้ามเปิดเผยรหัสผ่านต่อบุคคลภายนอก
+        </div>
+      </div>
+
+      <!-- Admin Console (Authenticated) -->
+      <div id="admin-console-screen" class="hidden space-y-6">
+        
+        <!-- Top Status Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-5 rounded-2xl soft-shadow border gap-4">
+          <div>
+            <div class="text-xs font-bold text-emerald-600 flex items-center mb-1">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></span>ADMINISTRATOR SESSION ACTIVE
+            </div>
+            <h2 class="text-xl font-bold text-slate-800">ระบบบริหารจัดการส่วนกลาง (Admin Dashboard)</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="adminAuth.openChangePasswordModal()" class="px-4 py-2 bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-200 transition">
+              <i class="fa-solid fa-key mr-1.5 text-slate-500"></i>เปลี่ยนรหัสผ่าน
+            </button>
+            <button onclick="adminAuth.logout()" class="px-4 py-2 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl text-xs sm:text-sm font-semibold hover:bg-rose-100 transition">
+              <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i>ออกจากระบบ
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Sub-Navigation Menu (5 Subtabs) -->
+        <div class="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2">
+          <button onclick="adminConsole.switchSubTab('events')" id="subnav-events" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white whitespace-nowrap shadow-sm">
+            <i class="fa-regular fa-calendar-plus mr-1.5"></i>จัดการกิจกรรม
+          </button>
+          <button onclick="adminConsole.switchSubTab('students')" id="subnav-students" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+            <i class="fa-solid fa-users mr-1.5"></i>นักศึกษาสอบสอน
+          </button>
+          <button onclick="adminConsole.switchSubTab('stages')" id="subnav-stages" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+            <i class="fa-solid fa-sliders mr-1.5"></i>ตั้งค่าขั้นตอนนาฬิกา
+          </button>
+          <button onclick="adminConsole.switchSubTab('appearance')" id="subnav-appearance" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+            <i class="fa-solid fa-palette mr-1.5"></i>ปรับแต่งเว็บไซต์ &amp; โลโก้
+          </button>
+          <button onclick="adminConsole.switchSubTab('backup')" id="subnav-backup" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap">
+            <i class="fa-solid fa-database mr-1.5"></i>สำรอง &amp; ส่งออก
+          </button>
+        </div>
+
+        <!-- SubTab 1: Events Manager -->
+        <div id="adminsub-events" class="space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-base font-bold text-slate-800">รายการกิจกรรมในระบบ</h3>
+            <button onclick="adminEvents.openCreateModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-plus"></i>
+              <span>เพิ่มกิจกรรมใหม่</span>
+            </button>
+          </div>
+
+          <div class="theme-card-bg rounded-2xl soft-shadow border overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b">
+                  <tr>
+                    <th class="p-3.5">ภาพปก</th>
+                    <th class="p-3.5">ชื่อกิจกรรม</th>
+                    <th class="p-3.5">หมวดหมู่</th>
+                    <th class="p-3.5">วันและเวลาเริ่มต้น</th>
+                    <th class="p-3.5">สถานะ</th>
+                    <th class="p-3.5 text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-events-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SubTab 2: Students & Exam Sessions -->
+        <div id="adminsub-students" class="space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="text-base font-bold text-slate-800">รายชื่อนักศึกษาและคิวการสอบสอน</h3>
+              <p class="text-xs text-slate-500">เลือกผู้เข้าสอบปัจจุบันเพื่อแสดงบนหน้า Teaching Examination Timer</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="adminStudents.downloadTemplate()" class="btn-card-secondary px-3.5 py-2 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center space-x-1.5 shadow-sm">
+                <i class="fa-solid fa-file-arrow-down text-blue-600"></i>
+                <span>ดาวน์โหลดแม่แบบ</span>
+              </button>
+
+              <label class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow transition flex items-center space-x-1.5 cursor-pointer">
+                <i class="fa-solid fa-file-import"></i>
+                <span>นำเข้าไฟล์</span>
+                <input type="file" id="import-students-file" accept=".csv,text/csv" class="hidden" onchange="adminStudents.handleFileImport(event)" />
+              </label>
+
+              <button onclick="adminStudents.openCreateModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>เพิ่มนักศึกษา</span>
+              </button>
+
+              <button type="button" onclick="adminStudents.clearAllStudents()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold text-xs sm:text-sm transition flex items-center space-x-1.5 shadow-sm" title="ล้างรายชื่อนักศึกษาทั้งหมดในระบบ">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>ล้างข้อมูลทั้งหมด</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="theme-card-bg rounded-2xl soft-shadow border overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b">
+                  <tr>
+                    <th class="p-3.5">ลำดับ</th>
+                    <th class="p-3.5">ชื่อ-สกุล</th>
+                    <th class="p-3.5">รหัสนักศึกษา</th>
+                    <th class="p-3.5">หัวข้อสอบสอน</th>
+                    <th class="p-3.5">สถานะ</th>
+                    <th class="p-3.5 text-right">เลือกคิว / จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-students-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SubTab 3: Teaching Stages Config -->
+        <div id="adminsub-stages" class="hidden space-y-5">
+          <div class="theme-card-bg p-6 rounded-2xl border soft-shadow space-y-5">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="text-base font-bold text-slate-800">ตั้งค่าขั้นตอนการสอบสอน (Teaching Examination Stages)</h3>
+                <p class="text-xs text-slate-500">กำหนดชื่อขั้นตอนและระยะเวลา (ผลรวมต้องตรงกับเวลารอบสอบรวม)</p>
+              </div>
+              <button onclick="adminStagesConfig.addStageRow()" class="px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-plus"></i>
+                <span>เพิ่มขั้นตอน</span>
+              </button>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span class="font-bold text-slate-700 mr-1">พรีเซ็ตเวลา:</span>
+              <button onclick="adminStagesConfig.applyPreset(5)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">5 นาที</button>
+              <button onclick="adminStagesConfig.applyPreset(10)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">10 นาที</button>
+              <button onclick="adminStagesConfig.applyPreset(15)" class="px-3 py-1.5 rounded-xl bg-blue-100 text-blue-700 font-bold border border-blue-200">15 นาที (5E Model)</button>
+              <button onclick="adminStagesConfig.applyPreset(20)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">20 นาที</button>
+              <button onclick="adminStagesConfig.applyPreset(30)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">30 นาที</button>
+              <button onclick="adminStagesConfig.applyPreset(45)" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-medium">45 นาที</button>
+            </div>
+
+            <!-- Stages Table/Form -->
+            <div id="admin-stages-editor-list" class="space-y-3 pt-2"></div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <div class="text-xs text-slate-600">
+                เวลารวมปัจจุบัน: <strong id="admin-stages-total-display" class="font-mono text-sm text-blue-700 font-bold">15 นาที</strong>
+              </div>
+              <button onclick="adminStagesConfig.saveStages()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow transition">
+                บันทึกขั้นตอนการสอบสอน
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SubTab 4: Appearance & Logo Manager -->
+        <div id="adminsub-appearance" class="hidden space-y-6">
+          
+          <!-- Website Logo Management (Centralized Logo for Entire Site & Timer) -->
+          <div class="theme-card-bg p-6 rounded-2xl soft-shadow border space-y-4">
+            <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+              <i class="fa-regular fa-image text-blue-600"></i>
+              <span>จัดการโลโก้และชื่อเว็บไซต์ (Website Logo &amp; Identity)</span>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <!-- Preview Box -->
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center space-y-3">
+                <div class="text-xs text-slate-500 font-medium">ตัวอย่างโลโก้ปัจจุบัน:</div>
+                <div id="logo-preview-box" class="w-24 h-24 rounded-2xl bg-white p-2 shadow-inner border border-slate-200 flex items-center justify-center overflow-hidden">
+                  <svg id="preview-default-logo" class="w-14 h-14 text-blue-800" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+                  </svg>
+                  <img id="preview-custom-logo" src="" alt="Preview Logo" class="hidden w-full h-full object-contain" />
+                </div>
+                <button onclick="appearanceManager.removeLogo()" class="text-xs text-rose-600 font-medium hover:underline">
+                  ลบโลโก้และใช้ค่าเริ่มต้น
+                </button>
+              </div>
+
+              <!-- Upload Inputs -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">อัปโหลดไฟล์โลโก้ใหม่ (PNG, JPEG, WebP ไม่เกิน 5MB)</label>
+                  <input type="file" id="logo-file-input" accept="image/png, image/jpeg, image/webp" onchange="appearanceManager.handleLogoUpload(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                  <p class="text-[11px] text-slate-400 mt-1">* โลโก้นี้จะแสดงผลในแถบเมนูหลักและหน้านาฬิกาสอบสอนโดยอัตโนมัติ</p>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อเว็บไซต์ (Site Title)</label>
+                  <input type="text" id="site-title-input" value="Academic Event & Timer Studio" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <div class="flex items-center space-x-2 pt-1">
+                  <input type="checkbox" id="show-title-with-logo" checked class="w-4 h-4 text-blue-600 rounded" />
+                  <label for="show-title-with-logo" class="text-xs text-slate-700 font-medium">แสดงชื่อเว็บไซต์คู่กับโลโก้ในแถบเมนู</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Customization (10 Design Tokens Grid + 12 Curated Palettes) -->
+          <div class="theme-card-bg p-6 rounded-2xl soft-shadow border space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                  <i class="fa-solid fa-palette text-amber-500"></i>
+                  <span>ปรับแต่งสีเว็บไซต์ (Theme &amp; Design Tokens)</span>
+                </h3>
+                <p class="text-xs text-slate-500">เลือกชุดสีสำเร็จรูปหรือปรับเปลี่ยนสีของระบบได้ทันทีโดยไม่ต้องแก้ไข CSS Code</p>
+              </div>
+            </div>
+
+            <!-- Curated Color Palette Presets -->
+            <div>
+              <div class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5 flex items-center space-x-1.5">
+                <i class="fa-solid fa-swatchbook text-blue-600"></i>
+                <span>ชุดสีสำเร็จรูปยอดนิยม (Curated Color Palettes from Generators)</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5" id="color-presets-grid"></div>
+            </div>
+
+            <!-- Accessibility Alert Warning -->
+            <div id="accessibility-warning" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center space-x-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
+              <span>คำเตือน Accessibility: ค่าสีข้อความและสีพื้นหลังที่เลือกอาจมี Contrast ต่ำ ทำให้อ่านยากบนบางอุปกรณ์</span>
+            </div>
+
+            <!-- 10 Design Tokens Grid (Exact 2 Rows of 5 Cards) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+              <!-- 1. Primary -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">1. Primary Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-primary" oninput="appearanceManager.previewColorChange()" value="#1e3a8a" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-primary-hex" oninput="appearanceManager.syncHexToColor('primary')" value="#1e3a8a" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 2. Secondary -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">2. Secondary Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-secondary" oninput="appearanceManager.previewColorChange()" value="#3b82f6" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-secondary-hex" oninput="appearanceManager.syncHexToColor('secondary')" value="#3b82f6" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 3. Accent -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">3. Accent Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-accent" oninput="appearanceManager.previewColorChange()" value="#f59e0b" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-accent-hex" oninput="appearanceManager.syncHexToColor('accent')" value="#f59e0b" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 4. Background -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">4. Background Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-bg" oninput="appearanceManager.previewColorChange()" value="#f8fafc" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-bg-hex" oninput="appearanceManager.syncHexToColor('bg')" value="#f8fafc" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 5. Card Background -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">5. Card Background</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-card" oninput="appearanceManager.previewColorChange()" value="#ffffff" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-card-hex" oninput="appearanceManager.syncHexToColor('card')" value="#ffffff" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 6. Text Color -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">6. Text Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-text" oninput="appearanceManager.previewColorChange()" value="#0f172a" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-text-hex" oninput="appearanceManager.syncHexToColor('text')" value="#0f172a" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 7. Header Color -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">7. Header Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-header" oninput="appearanceManager.previewColorChange()" value="#172554" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-header-hex" oninput="appearanceManager.syncHexToColor('header')" value="#172554" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 8. Navigation Color -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">8. Navigation Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-nav" oninput="appearanceManager.previewColorChange()" value="#1e40af" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-nav-hex" oninput="appearanceManager.syncHexToColor('nav')" value="#1e40af" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 9. Button Color -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">9. Button Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-button" oninput="appearanceManager.previewColorChange()" value="#2563eb" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-button-hex" oninput="appearanceManager.syncHexToColor('button')" value="#2563eb" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+
+              <!-- 10. Footer Color -->
+              <div class="p-3 rounded-xl bg-slate-50 border space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">10. Footer Color</label>
+                <div class="flex items-center space-x-2">
+                  <input type="color" id="color-footer" oninput="appearanceManager.previewColorChange()" value="#0f172a" class="w-8 h-8 rounded-lg cursor-pointer border-0 p-0" />
+                  <input type="text" id="color-footer-hex" oninput="appearanceManager.syncHexToColor('footer')" value="#0f172a" class="w-full font-mono text-xs px-2.5 py-1.5 rounded-lg border bg-white" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons for Appearance -->
+            <div class="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button onclick="appearanceManager.resetDefaultTheme()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition">
+                คืนค่าเริ่มต้น
+              </button>
+              <button onclick="appearanceManager.cancelThemeChanges()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition">
+                ยกเลิก
+              </button>
+              <button onclick="appearanceManager.saveThemeSettings()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow transition">
+                บันทึกการปรับแต่งเว็บไซต์
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SubTab 5: Backup & Export -->
+        <div id="adminsub-backup" class="hidden space-y-6">
+          <div class="theme-card-bg p-6 rounded-2xl border soft-shadow">
+            <h3 class="text-lg font-bold mb-1">สำรองและส่งออกข้อมูล (Data Backup &amp; Export)</h3>
+            <p class="text-xs sm:text-sm text-slate-500 mb-6">
+              ท่านสามารถดาวน์โหลดข้อมูลทั้งหมดเพื่อเก็บเป็นไฟล์สำรอง หรือนำไปวิเคราะห์ต่อยอด
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div class="bg-slate-50 p-5 rounded-2xl border flex flex-col justify-between">
+                <div>
+                  <h4 class="font-bold text-sm mb-1 text-slate-800">ส่งออกกิจกรรม (JSON)</h4>
+                  <p class="text-xs text-slate-500 mb-4">ข้อมูลกิจกรรมทั้งหมดพร้อมภาพปกและรายละเอียด</p>
+                </div>
+                <button onclick="backupManager.exportEventsJSON()" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold border rounded-xl text-xs sm:text-sm transition shadow-sm">
+                  ดาวน์โหลด JSON
+                </button>
+              </div>
+
+              <div class="bg-slate-50 p-5 rounded-2xl border flex flex-col justify-between">
+                <div>
+                  <h4 class="font-bold text-sm mb-1 text-slate-800">ส่งออกนักศึกษาสอบสอน (CSV)</h4>
+                  <p class="text-xs text-slate-500 mb-4">ประวัติและข้อมูลคิวสอบสอนสำหรับรายงานผล</p>
+                </div>
+                <button onclick="backupManager.exportStudentsCSV()" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold border rounded-xl text-xs sm:text-sm transition shadow-sm">
+                  ดาวน์โหลด CSV
+                </button>
+              </div>
+
+              <div class="bg-slate-50 p-5 rounded-2xl border flex flex-col justify-between">
+                <div>
+                  <h4 class="font-bold text-sm mb-1 text-slate-800">ส่งออกปฏิทิน (.ics)</h4>
+                  <p class="text-xs text-slate-500 mb-4">นำเข้าปฏิทินส่วนตัว เช่น Google Calendar หรือ Apple iCal</p>
+                </div>
+                <button onclick="calendarView.exportFullCalendarICS()" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold border rounded-xl text-xs sm:text-sm transition shadow-sm">
+                  ดาวน์โหลด .ics
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MANDATORY FOOTER                                        -->
+  <!-- ======================================================== -->
+  <footer id="main-footer" class="theme-footer-bg text-white py-6 border-t border-white/10 transition-colors duration-300 mt-auto select-none">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-sm font-medium tracking-wide text-slate-300">
+        พัฒนาโดย Prapaporn Nongharnpituk
+      </p>
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- MODALS                                                   -->
+  <!-- ======================================================== -->
+
+  <!-- 1. Event Detail Modal -->
+  <div id="event-detail-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-5 p-6 relative">
+      <button onclick="app.closeEventDetailModal()" class="absolute right-5 top-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="w-full h-56 sm:h-64 rounded-2xl overflow-hidden bg-slate-100 relative">
+        <img id="modal-event-img" src="" alt="Cover" class="w-full h-full object-cover" />
+        <div id="modal-event-cat-badge" class="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-white">
+          หมวดหมู่
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-start justify-between gap-3">
+          <h2 id="modal-event-title" class="text-xl sm:text-2xl font-bold leading-snug"></h2>
+          <button id="modal-pin-btn" onclick="app.togglePinCurrentModalEvent()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-amber-50 transition flex items-center space-x-1 shrink-0">
+            <i id="modal-pin-icon" class="fa-regular fa-star"></i>
+            <span id="modal-pin-text">ปักหมุด</span>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600 bg-slate-50 p-3.5 rounded-xl border">
+          <div><i class="fa-regular fa-calendar text-blue-600 mr-1.5"></i><span id="modal-event-date"></span></div>
+          <div><i class="fa-solid fa-location-dot text-rose-500 mr-1.5"></i><span id="modal-event-loc"></span></div>
+          <div><i class="fa-solid fa-building-columns text-emerald-600 mr-1.5"></i><span id="modal-event-dept"></span></div>
+          <div><i class="fa-solid fa-stopwatch text-amber-500 mr-1.5"></i><span id="modal-event-status"></span></div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">รายละเอียดกิจกรรม</h4>
+          <p id="modal-event-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button id="modal-share-btn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+            <i class="fa-solid fa-share-nodes text-blue-600 mr-1"></i>แชร์ / ปักหมุด
+          </button>
+          <button id="modal-google-cal-btn" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition shadow">
+            <i class="fa-brands fa-google mr-1"></i>ตั้งเตือนใน Google Cal
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Share & Pin Modal -->
+  <div id="share-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+      <button onclick="app.closeShareModal()" class="absolute right-5 top-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold flex items-center space-x-2">
+          <i class="fa-solid fa-share-nodes text-blue-600"></i>
+          <span>แชร์และปักหมุดกิจกรรม</span>
+        </h3>
+        <p id="share-modal-event-title" class="text-xs text-slate-500 line-clamp-1"></p>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-slate-700">ลิงก์ตรงสำหรับเข้าชมกิจกรรมนี้:</label>
+        <div class="flex items-center space-x-2">
+          <input type="text" id="share-link-input" readonly class="flex-1 px-3 py-2 text-xs rounded-xl border bg-slate-50 font-mono text-slate-700 select-all" />
+          <button onclick="app.copyShareUrlFromInput()" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow transition">
+            คัดลอก
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <span class="block text-xs font-semibold text-slate-700">แชร์ผ่านแอปพลิเคชัน:</span>
+        <div class="grid grid-cols-3 gap-2">
+          <button id="share-btn-line" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold flex items-center justify-center space-x-1.5">
+            <i class="fa-brands fa-line text-sm"></i><span>LINE</span>
+          </button>
+          <button id="share-btn-fb" class="py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center space-x-1.5">
+            <i class="fa-brands fa-facebook text-sm"></i><span>Facebook</span>
+          </button>
+          <button id="share-btn-x" class="py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-semibold flex items-center justify-center space-x-1.5">
+            <i class="fa-brands fa-x-twitter text-sm"></i><span>X</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+        <div class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
+          <i class="fa-solid fa-bell text-amber-600"></i>
+          <span>การแจ้งเตือนและปักหมุดสำหรับผู้เข้าชม</span>
+        </div>
+        <p class="text-[11px] text-amber-800 leading-relaxed">
+          ท่านสามารถปักหมุดไว้ดูภายหลัง หรือเพิ่มลง Google Calendar พร้อมตั้งให้ระบบแจ้งเตือนล่วงหน้า
+        </p>
+        <div class="flex items-center space-x-2 pt-1">
+          <button id="share-modal-pin-action-btn" onclick="app.togglePinFromShareModal()" class="flex-1 py-1.5 rounded-xl bg-white border border-amber-300 text-xs font-semibold text-amber-900 hover:bg-amber-100 transition">
+            <i class="fa-regular fa-star mr-1"></i><span id="share-modal-pin-label">ปักหมุดกิจกรรม</span>
+          </button>
+          <button id="share-modal-google-action-btn" class="flex-1 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition">
+            <i class="fa-brands fa-google mr-1"></i>ตั้งเตือนใน Google
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Add / Edit Event Modal -->
+  <div id="event-form-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 id="event-form-modal-title" class="text-lg font-bold text-slate-800">เพิ่มกิจกรรมใหม่</h3>
+        <button onclick="adminEvents.closeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="adminEvents.saveEvent(event)" class="space-y-4">
+        <input type="hidden" id="form-event-id" value="" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อกิจกรรม *</label>
+          <input type="text" id="form-event-title" required placeholder="ชื่อกิจกรรม..." class="w-full px-3.5 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">หมวดหมู่กิจกรรม *</label>
+            <select id="form-event-category" required class="w-full px-3.5 py-2 rounded-xl border text-sm outline-none bg-white">
+              <option value="ACADEMIC">วิชาการ</option>
+              <option value="TEACHING_EXAM">สอบสอน</option>
+              <option value="WORKSHOP">อบรมเชิงปฏิบัติการ</option>
+              <option value="CONFERENCE">สัมมนา</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">กิจกรรมเด่น (Featured Event)</label>
+            <div class="flex items-center h-10 space-x-2">
+              <input type="checkbox" id="form-event-featured" class="w-4 h-4 text-blue-600 rounded" />
+              <label for="form-event-featured" class="text-xs text-slate-700">แสดงใน Hero Section หน้าแรก</label>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">วันและเวลาเริ่มต้น *</label>
+            <input type="datetime-local" id="form-event-start" required class="w-full px-3 py-2 rounded-xl border text-xs sm:text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">วันและเวลาสิ้นสุด *</label>
+            <input type="datetime-local" id="form-event-end" required class="w-full px-3 py-2 rounded-xl border text-xs sm:text-sm outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">สถานที่จัดกิจกรรม</label>
+            <input type="text" id="form-event-location" placeholder="เช่น ห้องประชุม 402 หรือ Zoom" class="w-full px-3.5 py-2 rounded-xl border text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">หน่วยงาน/ผู้รับผิดชอบ</label>
+            <input type="text" id="form-event-dept" placeholder="เช่น ฝ่ายวิชาการ" class="w-full px-3.5 py-2 rounded-xl border text-sm outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">คำอธิบายกิจกรรม</label>
+          <textarea id="form-event-desc" rows="3" placeholder="รายละเอียดกิจกรรม..." class="w-full px-3.5 py-2 rounded-xl border text-sm outline-none"></textarea>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 border space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700">ภาพปกกิจกรรม 1 ภาพ (Cover Image)</span>
+            <button type="button" onclick="adminEvents.removeCoverImage()" class="text-xs text-rose-600 hover:underline">นำภาพออก</button>
+          </div>
+          <div class="w-full h-36 rounded-xl bg-slate-200 overflow-hidden relative flex items-center justify-center">
+            <img id="form-cover-preview" src="" alt="Preview" class="hidden w-full h-full object-cover" />
+            <div id="form-cover-empty-placeholder" class="text-center text-slate-400 p-4">
+              <i class="fa-regular fa-image text-3xl mb-1"></i>
+              <div class="text-xs">ยังไม่มีการเลือกภาพปก (ระบบจะใช้ภาพเริ่มต้น)</div>
+            </div>
+          </div>
+          <input type="file" id="form-event-file" accept="image/*" onchange="adminEvents.handleCoverUpload(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700" />
+          <input type="hidden" id="form-cover-data" value="" />
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="adminEvents.closeModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow">บันทึกข้อมูลกิจกรรม</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Student Modal -->
+  <div id="student-form-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 id="student-modal-title" class="text-base font-bold text-slate-800">เพิ่มรายชื่อนักศึกษาเข้าสอบ</h3>
+        <button onclick="adminStudents.closeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="adminStudents.saveStudent(event)" class="space-y-3">
+        <input type="hidden" id="form-student-id" value="" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ชื่อ - นามสกุล *</label>
+          <input type="text" id="form-student-name" required placeholder="เช่น นางสาวศิริพร ปัญญาไว" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสนักศึกษา</label>
+          <input type="text" id="form-student-code" placeholder="เช่น 6501123401" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">วิชา / กลุ่มเรียน</label>
+          <input type="text" id="form-student-course" placeholder="เช่น คณิตศาสตร์ ม.3" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">หัวข้อการสอน *</label>
+          <input type="text" id="form-student-topic" required placeholder="เช่น ทฤษฎีบทพีทาโกรัสกับการแก้โจทย์ปัญหา" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div class="flex items-center justify-end space-x-3 pt-3">
+          <button type="button" onclick="adminStudents.closeModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow">บันทึกรายชื่อ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Change Password Modal -->
+  <div id="change-password-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 class="text-base font-bold text-slate-800">เปลี่ยนรหัสผ่านผู้ดูแล</h3>
+        <button onclick="adminAuth.closeChangePasswordModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="adminAuth.handleChangePassword(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านเดิม</label>
+          <input type="password" id="old-pwd-input" required class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่ (อย่างน้อย 4 ตัวอักษร)</label>
+          <input type="password" id="new-pwd-input" required minlength="4" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่</label>
+          <input type="password" id="confirm-new-pwd-input" required minlength="4" class="w-full px-3 py-2 rounded-xl border text-sm outline-none" />
+        </div>
+        <div id="change-pwd-error" class="hidden text-xs text-rose-600 bg-rose-50 p-2 rounded-lg"></div>
+
+        <div class="flex items-center justify-end space-x-3 pt-2">
+          <button type="button" onclick="adminAuth.closeChangePasswordModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow">บันทึกรหัสผ่าน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div id="custom-confirm-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="theme-card-bg rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl mx-auto">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <div class="text-center space-y-1">
+        <h3 id="confirm-title" class="text-base font-bold text-slate-800">ยืนยันการดำเนินการ</h3>
+        <p id="confirm-message" class="text-xs text-slate-600">คุณแน่ใจหรือไม่ที่จะดำเนินการนี้?</p>
+      </div>
+      <div class="flex items-center justify-center space-x-3 pt-2">
+        <button id="confirm-cancel-btn" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">ยกเลิก</button>
+        <button id="confirm-ok-btn" class="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold shadow">ยืนยัน</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] space-y-2 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT LOGIC                                         -->
+  <!-- ======================================================== -->
+  <script>
+    // Initial Mock Events
+    const SEED_EVENTS = [
+      {
+        id: "evt-001",
+        title: "การสอบสอนระดับชาติ สาขาคณิตศาสตร์ศึกษา ประจำปีการศึกษา 2569",
+        category: "TEACHING_EXAM",
+        featured: true,
+        startTime: new Date(Date.now() + 86400000 * 2).toISOString(),
+        endTime: new Date(Date.now() + 86400000 * 2 + 14400000).toISOString(),
+        location: "ห้องประชุมสิริวิทยพัฒนา อาคาร 4 ชั้น 5",
+        dept: "คณะครุศาสตร์และศึกษาศาสตร์",
+        desc: "การประเมินทักษะการปฏิบัติการสอนในสถานการณ์จริงของนักศึกษาชั้นปีที่ 4 เน้นการจัดการเรียนรู้แบบ Active Learning และรูปแบบ 5E ในวิชาคณิตศาสตร์",
+        coverImage: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80"
+      },
+      {
+        id: "evt-002",
+        title: "สัมมนาวิชาการ: ปัญญาประดิษฐ์กับการสอนวิทยาศาสตร์และเทคโนโลยี",
+        category: "CONFERENCE",
+        featured: false,
+        startTime: new Date(Date.now() + 86400000 * 5).toISOString(),
+        endTime: new Date(Date.now() + 86400000 * 5 + 28800000).toISOString(),
+        location: "ห้องสัมมนาใหญ่ ดร.สมชาย และถ่ายทอดสดผ่าน Webex",
+        dept: "ศูนย์พัฒนาวิชาชีพครู",
+        desc: "การแลกเปลี่ยนเรียนรู้การบูรณาการ Generative AI ในการออกแบบแผนการจัดการเรียนรู้และการวัดผลประเมินผลทางการศึกษา",
+        coverImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80"
+      },
+      {
+        id: "evt-003",
+        title: "เวิร์กช็อปการสร้างสื่อการเรียนรู้สะเต็มศึกษา (STEM Education)",
+        category: "WORKSHOP",
+        featured: false,
+        startTime: new Date(Date.now() + 86400000 * 9).toISOString(),
+        endTime: new Date(Date.now() + 86400000 * 9 + 18000000).toISOString(),
+        location: "ห้องปฏิบัติการคอมพิวเตอร์และสื่อประยุกต์",
+        dept: "สาขาวิชาเทคโนโลยีการศึกษา",
+        desc: "ฝึกปฏิบัติการสร้างแบบจำลองสะเต็มศึกษาและการเขียนโปรแกรมควบคุมอย่างง่าย",
+        coverImage: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80"
+      }
+    ];
+
+    const SEED_STUDENTS = [
+      { id: "std-001", name: "นางสาวศิริพร ปัญญาไว", code: "6501123401", course: "คณิตศาสตร์ ม.3", topic: "ทฤษฎีบทพีทาโกรัสกับการแก้โจทย์ปัญหาในชีวิตประจำวัน", status: "READY" },
+      { id: "std-002", name: "นายธนพล รุ่งเรืองกิจ", code: "6501123402", course: "คณิตศาสตร์ ม.4", topic: "ฟังก์ชันตรีโกณมิติและการประยุกต์ทางเรขาคณิต", status: "WAITING" },
+      { id: "std-003", name: "นางสาวพิมพ์ชนก รักษ์ศิลป์", code: "6501123403", course: "คณิตศาสตร์ ม.2", topic: "การแปลงทางเรขาคณิต: การเลื่อนขนานและการสะท้อน", status: "WAITING" }
+    ];
+
+    const SEED_STAGES = [
+      { name: "ขั้นสร้างความสนใจ (Engagement)", durationMinutes: 2 },
+      { name: "ขั้นสำรวจและค้นพบ (Exploration)", durationMinutes: 4 },
+      { name: "ขั้นอธิบายและลงข้อสรุป (Explanation)", durationMinutes: 4 },
+      { name: "ขั้นขยายความรู้ (Elaboration)", durationMinutes: 3 },
+      { name: "ขั้นประเมินผล (Evaluation)", durationMinutes: 2 }
+    ];
+
+    const state = {
+      events: [...SEED_EVENTS],
+      students: [...SEED_STUDENTS],
+      currentStudentId: "std-001",
+      pinnedEventIds: JSON.parse(localStorage.getItem('pinned_events') || '[]'),
+      activeModalEventId: null,
+      currentCategoryFilter: 'ALL',
+      timer: {
+        isRunning: false,
+        totalSeconds: 900,
+        remainingSeconds: 900,
+        currentStageIndex: 0,
+        stages: [...SEED_STAGES],
+        soundEnabled: true,
+        viewMode: 'controller',
+        isPresentation: false
+      },
+      adminSession: {
+        isAuthenticated: true,
+        passwordHash: "Math1234"
+      }
+    };
+
+    // Synthesizer Audio
+    class AudioSynthesizer {
+      constructor() { this.ctx = null; }
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playChime(frequency = 587.33, duration = 0.4) {
+        if (!state.timer.soundEnabled) return;
+        try {
+          this.ensureContext();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+    }
+    const audioSynth = new AudioSynthesizer();
+
+    // Teaching Examination Timer Engine
+    class TeachingTimerEngine {
+      constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.timerInterval = null;
+      }
+
+      init() {
+        this.canvas = document.getElementById("analog-clock-canvas");
+        if (this.canvas) this.ctx = this.canvas.getContext("2d");
+        this.calculateStageTimeline();
+        this.renderDigitalDisplay();
+        this.renderStagesList();
+        this.drawAnalogClock();
+      }
+
+      calculateStageTimeline() {
+        let total = 0;
+        state.timer.stages.forEach(s => total += s.durationMinutes * 60);
+        state.timer.totalSeconds = total;
+        const badge = document.getElementById("total-stages-time-badge");
+        if (badge) badge.textContent = `เวลารวม ${Math.round(total / 60)} นาที`;
+      }
+
+      drawAnalogClock() {
+        if (!this.canvas || !this.ctx) return;
+        const ctx = this.ctx;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const radius = width / 2;
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.save();
+        ctx.translate(radius, radius);
+
+        // White Dial Face
+        ctx.beginPath();
+        ctx.arc(0, 0, radius - 16, 0, 2 * Math.PI);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.stroke();
+
+        // 5 Stage Colored Outer Arcs matching user screenshot
+        const stageColors = ["#ec4899", "#2563eb", "#06b6d4", "#8b5cf6", "#10b981"];
+        let accumulatedSec = 0;
+        const totalSec = state.timer.totalSeconds || 1;
+
+        state.timer.stages.forEach((st, idx) => {
+          const stageSec = st.durationMinutes * 60;
+          const startAngle = (accumulatedSec / totalSec) * 2 * Math.PI - Math.PI / 2;
+          const endAngle = ((accumulatedSec + stageSec) / totalSec) * 2 * Math.PI - Math.PI / 2;
+          accumulatedSec += stageSec;
+
+          ctx.beginPath();
+          ctx.arc(0, 0, radius - 16, startAngle, endAngle);
+          ctx.lineWidth = idx === state.timer.currentStageIndex ? 10 : 6;
+          ctx.strokeStyle = stageColors[idx % stageColors.length];
+          ctx.lineCap = "round";
+          ctx.stroke();
+        });
+
+        // 12, 3, 6, 9 Numbers & Dots for other hours
+        ctx.fillStyle = "#475569";
+        ctx.font = "bold 18px 'Prompt', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        for (let num = 1; num <= 12; num++) {
+          const ang = (num * Math.PI) / 6;
+          ctx.rotate(ang);
+          ctx.translate(0, -radius + 45);
+          ctx.rotate(-ang);
+          if (num % 3 === 0) {
+            ctx.fillText(num.toString(), 0, 0);
+          } else {
+            ctx.beginPath();
+            ctx.arc(0, 0, 2.5, 0, 2 * Math.PI);
+            ctx.fillStyle = "#94a3b8";
+            ctx.fill();
+          }
+          ctx.rotate(ang);
+          ctx.translate(0, radius - 45);
+          ctx.rotate(-ang);
+        }
+
+        // Orange Countdown Hand
+        const progressFraction = 1 - (state.timer.remainingSeconds / totalSec);
+        const sweepAngle = progressFraction * 2 * Math.PI - Math.PI / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(sweepAngle) * (radius - 55), Math.sin(sweepAngle) * (radius - 55));
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // Dark Blue Center Hub
+        ctx.beginPath();
+        ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = "#1e3a8a";
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      toggleRun() {
+        if (state.timer.isRunning) {
+          this.pause();
+        } else {
+          this.start();
+        }
+      }
+
+      start() {
+        audioSynth.ensureContext();
+        state.timer.isRunning = true;
+        document.getElementById("timer-main-icon").className = "fa-solid fa-pause";
+        document.getElementById("timer-main-text").textContent = "หยุดชั่วคราว";
+        document.getElementById("timer-main-action-btn").className = "px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition flex items-center space-x-2";
+
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => this.tick(), 1000);
+      }
+
+      pause() {
+        state.timer.isRunning = false;
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        document.getElementById("timer-main-icon").className = "fa-solid fa-play";
+        document.getElementById("timer-main-text").textContent = "เริ่มจับเวลา";
+        document.getElementById("timer-main-action-btn").className = "px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition flex items-center space-x-2";
+      }
+
+      tick() {
+        if (!state.timer.isRunning) return;
+        if (state.timer.remainingSeconds > 0) {
+          state.timer.remainingSeconds--;
+          this.evaluateCurrentStage();
+        } else {
+          this.pause();
+          audioSynth.playChime(440, 1.2);
+          showToast("หมดเวลาการสอบสอน", "การสอบสอนสิ้นสุดลงเรียบร้อยแล้ว", "success");
+        }
+        this.renderDigitalDisplay();
+        this.drawAnalogClock();
+      }
+
+      evaluateCurrentStage() {
+        const elapsed = state.timer.totalSeconds - state.timer.remainingSeconds;
+        let cumulative = 0;
+        let foundIndex = 0;
+
+        for (let i = 0; i < state.timer.stages.length; i++) {
+          cumulative += state.timer.stages[i].durationMinutes * 60;
+          if (elapsed < cumulative) {
+            foundIndex = i;
+            break;
+          }
+        }
+        if (foundIndex !== state.timer.currentStageIndex) {
+          state.timer.currentStageIndex = foundIndex;
+          audioSynth.playChime(659.25, 0.4);
+          this.renderStagesList();
+        }
+      }
+
+      confirmReset() {
+        showConfirmModal("รีเซ็ตนาฬิกาจับเวลา", "คุณต้องการรีเซ็ตเวลากลับไปเป็นค่าเริ่มต้นหรือไม่?", () => {
+          this.reset();
+        });
+      }
+
+      reset() {
+        this.pause();
+        this.calculateStageTimeline();
+        state.timer.remainingSeconds = state.timer.totalSeconds;
+        state.timer.currentStageIndex = 0;
+        this.renderDigitalDisplay();
+        this.renderStagesList();
+        this.drawAnalogClock();
+        showToast("รีเซ็ตเวลาแล้ว", "นาฬิกากลับสู่สถานะเริ่มต้นเรียบร้อย", "info");
+      }
+
+      nextStage() {
+        if (state.timer.currentStageIndex < state.timer.stages.length - 1) {
+          state.timer.currentStageIndex++;
+          this.recalculateRemainingToStage(state.timer.currentStageIndex);
+          audioSynth.playChime(587.33, 0.3);
+          this.renderDigitalDisplay();
+          this.renderStagesList();
+          this.drawAnalogClock();
+        }
+      }
+
+      prevStage() {
+        if (state.timer.currentStageIndex > 0) {
+          state.timer.currentStageIndex--;
+          this.recalculateRemainingToStage(state.timer.currentStageIndex);
+          this.renderDigitalDisplay();
+          this.renderStagesList();
+          this.drawAnalogClock();
+        }
+      }
+
+      recalculateRemainingToStage(stageIdx) {
+        let elapsedBefore = 0;
+        for (let i = 0; i < stageIdx; i++) {
+          elapsedBefore += state.timer.stages[i].durationMinutes * 60;
+        }
+        state.timer.remainingSeconds = state.timer.totalSeconds - elapsedBefore;
+      }
+
+      renderDigitalDisplay() {
+        const mins = Math.floor(state.timer.remainingSeconds / 60);
+        const secs = state.timer.remainingSeconds % 60;
+        const timeStr = `${String(mins).padStart(2, '0')} : ${String(secs).padStart(2, '0')}`;
+
+        const displayEl = document.getElementById("digital-clock-display");
+        if (displayEl) displayEl.textContent = timeStr;
+
+        const totalElapsedSec = state.timer.totalSeconds - state.timer.remainingSeconds;
+        const elapMins = Math.floor(totalElapsedSec / 60);
+        const elapSecs = totalElapsedSec % 60;
+        const totalEl = document.getElementById("total-time-elapsed");
+        if (totalEl) totalEl.textContent = `${String(elapMins).padStart(2, '0')}:${String(elapSecs).padStart(2, '0')}`;
+
+        let stageStart = 0;
+        for (let i = 0; i < state.timer.currentStageIndex; i++) {
+          stageStart += state.timer.stages[i].durationMinutes * 60;
+        }
+        const curStageDuration = (state.timer.stages[state.timer.currentStageIndex]?.durationMinutes || 1) * 60;
+        const curStageElapsed = totalElapsedSec - stageStart;
+        const curStageRemaining = Math.max(0, curStageDuration - curStageElapsed);
+
+        const sMins = Math.floor(curStageRemaining / 60);
+        const sSecs = curStageRemaining % 60;
+        const stageRemEl = document.getElementById("stage-time-remaining");
+        if (stageRemEl) stageRemEl.textContent = `${String(sMins).padStart(2, '0')}:${String(sSecs).padStart(2, '0')}`;
+
+        const pct = Math.min(100, Math.round((totalElapsedSec / (state.timer.totalSeconds || 1)) * 100));
+        const pBar = document.getElementById("timer-progress-bar");
+        const pText = document.getElementById("progress-percentage-text");
+        if (pBar) pBar.style.width = `${pct}%`;
+        if (pText) pText.textContent = `${pct}%`;
+
+        const stTitle = document.getElementById("current-stage-title");
+        if (stTitle && state.timer.stages[state.timer.currentStageIndex]) {
+          stTitle.textContent = `ขั้นตอนที่ ${state.timer.currentStageIndex + 1}: ${state.timer.stages[state.timer.currentStageIndex].name}`;
+        }
+      }
+
+      renderStagesList() {
+        const list = document.getElementById("stages-cards-list");
+        if (!list) return;
+        list.innerHTML = "";
+
+        state.timer.stages.forEach((st, idx) => {
+          const active = idx === state.timer.currentStageIndex;
+          const card = document.createElement("div");
+          card.className = active
+            ? "p-3.5 rounded-2xl border-2 border-blue-500 bg-blue-50/20 text-slate-800 shadow-sm transition cursor-pointer"
+            : "p-3.5 rounded-2xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer";
+          
+          card.onclick = () => {
+            if (state.timer.viewMode === 'controller') {
+              state.timer.currentStageIndex = idx;
+              this.recalculateRemainingToStage(idx);
+              this.renderDigitalDisplay();
+              this.renderStagesList();
+              this.drawAnalogClock();
+            }
+          };
+
+          card.innerHTML = `
+            <div class="flex justify-between items-center mb-1 text-xs">
+              <span class="font-bold ${active ? 'text-blue-600' : 'text-slate-800'}">ช่วงที่ ${idx + 1}</span>
+              <span class="text-slate-400 font-medium">${st.durationMinutes} นาที</span>
+            </div>
+            <div class="truncate text-xs font-bold ${active ? 'text-blue-700' : 'text-slate-800'}">${st.name}</div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      toggleSound() {
+        state.timer.soundEnabled = !state.timer.soundEnabled;
+        const btn = document.getElementById("timer-sound-toggle-btn");
+        const label = document.getElementById("timer-sound-label");
+        const icon = document.getElementById("timer-sound-icon");
+
+        if (state.timer.soundEnabled) {
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center space-x-1.5 shadow-sm";
+          icon.className = "fa-solid fa-volume-high";
+          label.textContent = "เสียง: เปิด";
+          audioSynth.playChime(600, 0.2);
+        } else {
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200 transition flex items-center space-x-1.5 shadow-sm";
+          icon.className = "fa-solid fa-volume-xmark";
+          label.textContent = "เสียง: ปิด";
+        }
+      }
+
+      setViewMode(mode) {
+        state.timer.viewMode = mode;
+        const btnPub = document.getElementById("timer-mode-btn-public");
+        const btnCtrl = document.getElementById("timer-mode-btn-controller");
+        const ctrlPanel = document.getElementById("timer-controller-panel");
+        const pubNotice = document.getElementById("timer-public-notice");
+
+        if (mode === 'controller') {
+          btnCtrl.className = "px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 transition font-bold";
+          btnPub.className = "px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+          ctrlPanel.classList.remove("hidden");
+          pubNotice.classList.add("hidden");
+        } else {
+          btnPub.className = "px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-blue-700 transition font-bold";
+          btnCtrl.className = "px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+          ctrlPanel.classList.add("hidden");
+          pubNotice.classList.remove("hidden");
+        }
+      }
+
+      togglePresentationMode() {
+        const box = document.getElementById("timer-showcase-box");
+        const presHeader = document.getElementById("presentation-candidate-header");
+        const presTitle = document.getElementById("presentation-student-title");
+        const presTopic = document.getElementById("presentation-student-topic");
+        const currentStd = state.students.find(s => s.id === state.currentStudentId);
+
+        state.timer.isPresentation = !state.timer.isPresentation;
+        if (state.timer.isPresentation) {
+          box.classList.add("presentation-active");
+          if (presHeader) {
+            presHeader.classList.remove("hidden");
+            if (presTitle) {
+              presTitle.textContent = currentStd ? `${currentStd.name} (${currentStd.course || 'ไม่ระบุวิชา'})` : 'รอบการสอบสอนปัจจุบัน';
+            }
+            if (presTopic) {
+              presTopic.textContent = currentStd ? `หัวข้อ: ${currentStd.topic}` : 'หัวข้อ: -';
+            }
+          }
+          showToast("Projector Fullscreen", "เปิดโหมดนำเสนอเต็มหน้าจอแล้ว (กดปุ่ม 'ยุบหน้าต่าง' หรือกด Esc เพื่อออก)", "info");
+        } else {
+          box.classList.remove("presentation-active");
+          if (presHeader) presHeader.classList.add("hidden");
+        }
+        this.renderDigitalDisplay();
+      }
+    }
+    const timerEngine = new TeachingTimerEngine();
+
+    // Support keyboard ESC to collapse projector fullscreen mode
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && state.timer.isPresentation) {
+        timerEngine.togglePresentationMode();
+      }
+    });
+
+    // Calendar View
+    const calendarView = {
+      activeDate: new Date(2026, 8, 21),
+      viewMode: 'month',
+
+      init() {
+        this.render();
+      },
+
+      setViewMode(mode) {
+        this.viewMode = mode;
+        ['month', 'week', 'day', 'agenda'].forEach(m => {
+          const btn = document.getElementById(`cal-mode-${m}`);
+          if (btn) {
+            if (m === mode) {
+              btn.className = "cal-tab-btn active px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition whitespace-nowrap";
+            } else {
+              btn.className = "cal-tab-btn px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap";
+            }
+          }
+        });
+
+        document.getElementById("cal-view-month-container").classList.toggle("hidden", mode !== 'month');
+        document.getElementById("cal-view-week-container").classList.toggle("hidden", mode !== 'week');
+        document.getElementById("cal-view-day-container").classList.toggle("hidden", mode !== 'day');
+        document.getElementById("cal-view-agenda-container").classList.toggle("hidden", mode !== 'agenda');
+
+        this.render();
+      },
+
+      prev() {
+        if (this.viewMode === 'month') this.activeDate.setMonth(this.activeDate.getMonth() - 1);
+        else if (this.viewMode === 'week') this.activeDate.setDate(this.activeDate.getDate() - 7);
+        else if (this.viewMode === 'day') this.activeDate.setDate(this.activeDate.getDate() - 1);
+        else this.activeDate.setMonth(this.activeDate.getMonth() - 1);
+        this.render();
+      },
+
+      next() {
+        if (this.viewMode === 'month') this.activeDate.setMonth(this.activeDate.getMonth() + 1);
+        else if (this.viewMode === 'week') this.activeDate.setDate(this.activeDate.getDate() + 7);
+        else if (this.viewMode === 'day') this.activeDate.setDate(this.activeDate.getDate() + 1);
+        else this.activeDate.setMonth(this.activeDate.getMonth() + 1);
+        this.render();
+      },
+
+      today() {
+        this.activeDate = new Date(2026, 8, 21);
+        this.render();
+      },
+
+      render() {
+        const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        const titleEl = document.getElementById("calendar-month-year-title");
+        const y = this.activeDate.getFullYear();
+        const m = this.activeDate.getMonth();
+        const yearBE = y + 543;
+
+        if (this.viewMode === 'month') {
+          titleEl.textContent = `${thaiMonths[m]} ${yearBE}`;
+          const grid = document.getElementById("calendar-days-grid");
+          grid.innerHTML = "";
+
+          const firstDay = new Date(y, m, 1).getDay();
+          const daysInMonth = new Date(y, m + 1, 0).getDate();
+          const prevDays = new Date(y, m, 0).getDate();
+
+          for (let i = firstDay - 1; i >= 0; i--) {
+            grid.innerHTML += `<div class="bg-slate-50/50 p-2 min-h-[105px] text-slate-300 text-xs">${prevDays - i}</div>`;
+          }
+
+          for (let d = 1; d <= daysInMonth; d++) {
+            const isToday = (d === 21 && m === 8 && y === 2026);
+            const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dayEvents = state.events.filter(e => e.startTime.startsWith(dateStr));
+
+            let pills = dayEvents.map(e => `
+              <div onclick="event.stopPropagation(); app.openEventDetailModal('${e.id}')" class="mt-1 px-2 py-0.5 rounded text-[11px] font-bold text-white truncate bg-blue-600 cursor-pointer shadow-sm">
+                ${e.title}
+              </div>
+            `).join('');
+
+            grid.innerHTML += `
+              <div class="bg-white p-2 min-h-[105px] hover:bg-slate-50 transition cursor-pointer flex flex-col justify-between" onclick="calendarView.onCellClick(${y}, ${m}, ${d})">
+                <div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold ${isToday ? 'w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow' : 'text-slate-700'}">${d}</span>
+                    ${dayEvents.length > 0 ? `<span class="text-[10px] text-slate-400 font-bold">${dayEvents.length} รายการ</span>` : ''}
+                  </div>
+                  ${pills}
+                </div>
+              </div>
+            `;
+          }
+
+          const totalCells = firstDay + daysInMonth;
+          const nextPad = (Math.ceil(totalCells / 7) * 7) - totalCells;
+          for (let i = 1; i <= nextPad; i++) {
+            grid.innerHTML += `<div class="bg-slate-50/50 p-2 min-h-[105px] text-slate-300 text-xs">${i}</div>`;
+          }
+        } else if (this.viewMode === 'week') {
+          const curr = new Date(this.activeDate);
+          const first = curr.getDate() - curr.getDay();
+          const startW = new Date(curr.setDate(first));
+          const endW = new Date(curr.setDate(first + 6));
+          titleEl.textContent = `สัปดาห์ที่ ${startW.getDate()} - ${endW.getDate()} ${thaiMonths[startW.getMonth()]} ${startW.getFullYear() + 543}`;
+
+          const weekGrid = document.getElementById("calendar-week-grid");
+          weekGrid.innerHTML = "";
+          const days = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+          for (let i = 0; i < 7; i++) {
+            const colDate = new Date(startW);
+            colDate.setDate(colDate.getDate() + i);
+            const dateStr = `${colDate.getFullYear()}-${String(colDate.getMonth() + 1).padStart(2, '0')}-${String(colDate.getDate()).padStart(2, '0')}`;
+            const dayEvents = state.events.filter(e => e.startTime.startsWith(dateStr));
+            const isToday = (colDate.getDate() === 21 && colDate.getMonth() === 8);
+
+            let cards = dayEvents.map(e => `
+              <div onclick="app.openEventDetailModal('${e.id}')" class="p-2.5 rounded-xl border bg-white shadow-sm hover:shadow cursor-pointer transition space-y-1 mb-2">
+                <span class="text-[10px] font-bold text-blue-600">${new Date(e.startTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.</span>
+                <h5 class="text-xs font-bold leading-tight line-clamp-2">${e.title}</h5>
+              </div>
+            `).join('');
+
+            if (dayEvents.length === 0) cards = `<div class="text-center py-12 text-slate-300 text-xs">ไม่มีกิจกรรม</div>`;
+
+            weekGrid.innerHTML += `
+              <div class="bg-white flex flex-col">
+                <div class="p-3 text-center border-b ${isToday ? 'bg-amber-50 font-bold text-amber-900' : 'bg-slate-50 text-slate-600'}">
+                  <span class="text-xs">${days[i]}</span>
+                  <div class="text-lg font-bold">${colDate.getDate()}</div>
+                </div>
+                <div class="p-2 flex-1">${cards}</div>
+              </div>
+            `;
+          }
+        } else if (this.viewMode === 'day') {
+          titleEl.textContent = `วัน${['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][this.activeDate.getDay()]}ที่ ${this.activeDate.getDate()} ${thaiMonths[m]} ${yearBE}`;
+          const container = document.getElementById("calendar-day-content");
+          container.innerHTML = `
+            <div class="p-4 rounded-2xl border bg-slate-50 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-blue-600">14:07 - 18:07 น.</span>
+                <h4 class="font-bold text-base mt-0.5">การสอบสอนระดับชาติ สาขาคณิตศาสตร์ศึกษา</h4>
+                <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-rose-500"></i>ห้องประชุมสิริวิทยพัฒนา</p>
+              </div>
+              <button onclick="app.openEventDetailModal('evt-001')" class="px-4 py-2 rounded-xl bg-white border text-xs font-bold shadow-sm">ดูรายละเอียด</button>
+            </div>
+          `;
+        } else if (this.viewMode === 'agenda') {
+          titleEl.textContent = `กำหนดการกิจกรรม (${thaiMonths[m]} ${yearBE})`;
+          const list = document.getElementById("calendar-agenda-list");
+          list.innerHTML = state.events.map(e => `
+            <div class="p-4 rounded-2xl border bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <span class="text-xs font-bold text-blue-600"><i class="fa-regular fa-clock mr-1"></i>${new Date(e.startTime).toLocaleString('th-TH')} น.</span>
+                <h4 class="font-bold text-base mt-0.5">${e.title}</h4>
+                <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1 text-rose-500"></i>${e.location || 'Zoom'}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="app.openEventDetailModal('${e.id}')" class="px-4 py-2 rounded-xl bg-white border text-xs font-bold">รายละเอียด</button>
+                <button onclick="app.openGoogleCalendar(state.events.find(x => x.id === '${e.id}'))" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold"><i class="fa-brands fa-google mr-1"></i>Google Cal</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      },
+
+      onCellClick(y, m, d) {
+        if (state.adminSession.isAuthenticated) {
+          adminEvents.openCreateModal(`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+        } else {
+          this.activeDate = new Date(y, m, d);
+          this.setViewMode('day');
+        }
+      },
+
+      exportFullCalendarICS() {
+        let ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Academic Event Studio//TH\r\nCALSCALE:GREGORIAN\r\n";
+        state.events.forEach(ev => {
+          const s = new Date(ev.startTime).toISOString().replace(/-|:|\.\d\d\d/g, "");
+          const e = new Date(ev.endTime).toISOString().replace(/-|:|\.\d\d\d/g, "");
+          ics += `BEGIN:VEVENT\r\nUID:${ev.id}@academicstudio.edu\r\nDTSTAMP:${s}\r\nDTSTART:${s}\r\nDTEND:${e}\r\nSUMMARY:${ev.title}\r\nDESCRIPTION:${ev.desc || ''}\r\nLOCATION:${ev.location || ''}\r\n`;
+          ics += `BEGIN:VALARM\r\nTRIGGER:-P1D\r\nACTION:DISPLAY\r\nDESCRIPTION:เตือนล่วงหน้า 1 วัน\r\nEND:VALARM\r\n`;
+          ics += `BEGIN:VALARM\r\nTRIGGER:-PT1H\r\nACTION:DISPLAY\r\nDESCRIPTION:เตือนล่วงหน้า 1 ชั่วโมง\r\nEND:VALARM\r\n`;
+          ics += `END:VEVENT\r\n`;
+        });
+        ics += "END:VCALENDAR";
+
+        const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `academic_calendar_backup.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("ส่งออก .ics สำเร็จ", "นำไฟล์ไปเปิดใน Apple iCal หรือ Outlook ได้ทันที", "success");
+      }
+    };
+
+    // App Controller
+    const app = {
+      init() {
+        this.renderEventCards();
+        timerEngine.init();
+        calendarView.init();
+        appearanceManager.initPresets();
+        adminStagesConfig.renderList();
+
+        // Check for saved custom logo
+        const savedLogo = localStorage.getItem('site_custom_logo');
+        if (savedLogo) {
+          appearanceManager.applyLogoToAll(savedLogo);
+        }
+
+        // 1-second interval loop
+        setInterval(() => this.tick(), 1000);
+        this.tick();
+
+        // Detect shared URL param ?event=ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedId = urlParams.get('event');
+        if (sharedId) {
+          setTimeout(() => this.openShareModal(sharedId), 400);
+        }
+      },
+
+      switchTab(tabId) {
+        ['dashboard', 'calendar', 'timer', 'admin'].forEach(t => {
+          document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabId);
+          const btn = document.getElementById(`nav-btn-${t}`);
+          if (btn) {
+            btn.classList.toggle('bg-white/20', t === tabId);
+            btn.classList.toggle('text-white', t === tabId);
+          }
+        });
+
+        if (tabId === 'calendar') calendarView.render();
+        if (tabId === 'timer') {
+          timerEngine.drawAnalogClock();
+          timerEngine.renderStagesList();
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      toggleMobileMenu(force = null) {
+        const drawer = document.getElementById("mobile-drawer");
+        if (force === false) drawer.classList.add("hidden");
+        else drawer.classList.toggle("hidden");
+      },
+
+      tick() {
+        const now = new Date();
+        document.getElementById("header-live-time").textContent = now.toLocaleTimeString('th-TH');
+
+        // Calculate nearest event
+        let nearest = null;
+        let minDiff = Infinity;
+        let counts = { total: state.events.length, upcoming: 0, ongoing: 0, completed: 0 };
+        const nowMs = now.getTime();
+
+        state.events.forEach(ev => {
+          const s = new Date(ev.startTime).getTime();
+          const e = new Date(ev.endTime).getTime();
+
+          if (nowMs < s) {
+            counts.upcoming++;
+            const diff = s - nowMs;
+            if (diff < minDiff) { minDiff = diff; nearest = ev; }
+          } else if (nowMs >= s && nowMs <= e) {
+            counts.ongoing++;
+            nearest = ev;
+            minDiff = -1;
+          } else {
+            counts.completed++;
+          }
+        });
+
+        document.getElementById("stat-total-events").textContent = counts.total;
+        document.getElementById("stat-upcoming-events").textContent = counts.upcoming;
+        document.getElementById("stat-ongoing-events").textContent = counts.ongoing;
+        document.getElementById("stat-completed-events").textContent = counts.completed;
+
+        // Update Hero
+        if (nearest) {
+          const bgLayer = document.getElementById("hero-bg-cover");
+          if (bgLayer && !bgLayer.style.backgroundImage.includes(nearest.coverImage)) {
+            bgLayer.style.backgroundImage = `url('${nearest.coverImage}')`;
+          }
+          document.getElementById("hero-event-title").textContent = nearest.title;
+          document.getElementById("hero-event-desc").textContent = nearest.desc || "ไม่มีรายละเอียดเพิ่มเติม";
+          document.getElementById("hero-event-date").textContent = new Date(nearest.startTime).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }) + ' น.';
+          document.getElementById("hero-event-location").textContent = nearest.location || "ไม่ได้ระบุสถานที่";
+          document.getElementById("hero-event-dept").textContent = nearest.dept || "ฝ่ายวิชาการ";
+
+          document.getElementById("hero-view-details-btn").onclick = () => app.openEventDetailModal(nearest.id);
+          document.getElementById("hero-google-cal-btn").onclick = () => app.openGoogleCalendar(nearest);
+          document.getElementById("hero-share-btn").onclick = () => app.openShareModal(nearest.id);
+
+          if (minDiff > 0) {
+            const d = Math.floor(minDiff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((minDiff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((minDiff / 1000 / 60) % 60);
+            const s = Math.floor((minDiff / 1000) % 60);
+
+            document.getElementById("hero-days").textContent = String(d).padStart(2, '0');
+            document.getElementById("hero-hours").textContent = String(h).padStart(2, '0');
+            document.getElementById("hero-minutes").textContent = String(m).padStart(2, '0');
+            document.getElementById("hero-seconds").textContent = String(s).padStart(2, '0');
+
+            document.getElementById("hero-status-pill").className = "mt-6 inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30";
+            document.getElementById("hero-status-pill").innerHTML = '<i class="fa-solid fa-clock mr-2"></i>กำลังจะมาถึง';
+            document.getElementById("hero-badge-title").textContent = "กิจกรรมสำคัญที่ใกล้ถึงที่สุด (Nearest Upcoming Event)";
+          } else {
+            document.getElementById("hero-days").textContent = "00";
+            document.getElementById("hero-hours").textContent = "00";
+            document.getElementById("hero-minutes").textContent = "00";
+            document.getElementById("hero-seconds").textContent = "00";
+
+            document.getElementById("hero-status-pill").className = "mt-6 inline-flex items-center px-4 py-2 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            document.getElementById("hero-status-pill").innerHTML = '<i class="fa-solid fa-circle-play mr-2"></i>กำลังดำเนินการขณะนี้';
+            document.getElementById("hero-badge-title").textContent = "กิจกรรมที่กำลังดำเนินการขณะนี้ (Live Active Event)";
+          }
+        }
+      },
+
+      setCategoryFilter(cat) {
+        this.currentCategoryFilter = cat;
+        document.querySelectorAll(".cat-pill").forEach(btn => {
+          const isTarget = btn.getAttribute("data-cat") === cat;
+          if (isTarget) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+        this.renderEventCards();
+      },
+
+      filterEvents() {
+        this.renderEventCards();
+      },
+
+      renderEventCards() {
+        const container = document.getElementById("events-grid-container");
+        if (!container) return;
+        const q = (document.getElementById("event-search-input")?.value || "").toLowerCase();
+        const stat = document.getElementById("event-status-filter")?.value || "ALL";
+        const now = Date.now();
+
+        const filtered = state.events.filter(e => {
+          const matchCat = (this.currentCategoryFilter === 'ALL' || e.category === this.currentCategoryFilter);
+          const matchSearch = e.title.toLowerCase().includes(q) || (e.desc || "").toLowerCase().includes(q);
+          const s = new Date(e.startTime).getTime();
+          const end = new Date(e.endTime).getTime();
+          let st = "COMPLETED";
+          if (now < s) st = "UPCOMING";
+          else if (now >= s && now <= end) st = "ONGOING";
+          const matchStat = (stat === 'ALL' || stat === st);
+          return matchCat && matchSearch && matchStat;
+        });
+
+        container.innerHTML = filtered.map(e => {
+          const isPinned = state.pinnedEventIds.includes(e.id);
+          return `
+            <div class="theme-card-bg rounded-3xl border overflow-hidden soft-shadow hover-lift flex flex-col justify-between">
+              <div class="relative h-48 w-full bg-slate-900">
+                <img src="${e.coverImage}" alt="${e.title}" class="w-full h-full object-cover">
+                <div class="absolute top-3.5 left-3.5 flex gap-2">
+                  <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-blue-600 text-white shadow-md">${e.category}</span>
+                  ${isPinned ? '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500 text-slate-950 shadow-md">★ ปักหมุดแล้ว</span>' : ''}
+                </div>
+              </div>
+              <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div>
+                  <h3 class="font-bold text-base leading-snug line-clamp-2 cursor-pointer hover:text-blue-600" onclick="app.openEventDetailModal('${e.id}')">${e.title}</h3>
+                  <p class="text-xs text-slate-500 line-clamp-2 mt-2 leading-relaxed">${e.desc || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
+                </div>
+                <div class="space-y-1 text-xs text-slate-500 border-t pt-3">
+                  <div><i class="fa-regular fa-calendar text-blue-500 mr-2"></i>${new Date(e.startTime).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })} น.</div>
+                  <div><i class="fa-solid fa-location-dot text-rose-500 mr-2"></i>${e.location || 'ไม่ได้ระบุ'}</div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 pt-2 border-t">
+                  <button onclick="app.openEventDetailModal('${e.id}')" class="btn-card-secondary py-2 rounded-xl text-xs font-bold">ข้อมูล</button>
+                  <button onclick="app.openGoogleCalendar(state.events.find(x => x.id === '${e.id}'))" class="py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold hover:bg-amber-600 transition shadow-sm">เตือน Cal</button>
+                  <button onclick="app.openShareModal('${e.id}')" class="py-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition">แชร์</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      openEventDetailModal(id) {
+        const ev = state.events.find(x => x.id === id);
+        if (!ev) return;
+        state.activeModalEventId = id;
+
+        document.getElementById("modal-event-img").src = ev.coverImage;
+        document.getElementById("modal-event-cat-badge").textContent = ev.category;
+        document.getElementById("modal-event-title").textContent = ev.title;
+        document.getElementById("modal-event-date").textContent = `${new Date(ev.startTime).toLocaleString('th-TH')} - ${new Date(ev.endTime).toLocaleTimeString('th-TH')} น.`;
+        document.getElementById("modal-event-loc").textContent = ev.location || "ไม่ได้ระบุ";
+        document.getElementById("modal-event-dept").textContent = ev.dept || "ไม่ได้ระบุ";
+        document.getElementById("modal-event-desc").textContent = ev.desc || "ไม่มีรายละเอียดเพิ่มเติม";
+        document.getElementById("modal-event-status").textContent = new Date(ev.startTime) > new Date() ? "กำลังจะมาถึง" : "กำลังดำเนินการ";
+
+        this.updateModalPinUI(id);
+        document.getElementById("modal-share-btn").onclick = () => {
+          this.closeEventDetailModal();
+          this.openShareModal(ev.id);
+        };
+        document.getElementById("modal-google-cal-btn").onclick = () => this.openGoogleCalendar(ev);
+
+        document.getElementById("event-detail-modal").classList.remove("hidden");
+      },
+
+      closeEventDetailModal() {
+        document.getElementById("event-detail-modal").classList.add("hidden");
+      },
+
+      openShareModal(id) {
+        const ev = state.events.find(x => x.id === id) || state.events[0];
+        if (!ev) return;
+        state.activeModalEventId = ev.id;
+
+        document.getElementById("share-modal-event-title").textContent = ev.title;
+        let url = window.location.origin + window.location.pathname;
+        if (url.includes('blob:') || url.includes('sandbox')) {
+          url = 'https://[your-username].github.io/academic-event-timer/';
+        }
+        document.getElementById("share-link-input").value = `${url}?event=${ev.id}`;
+
+        const isPinned = state.pinnedEventIds.includes(ev.id);
+        document.getElementById("share-modal-pin-label").textContent = isPinned ? "ยกเลิกปักหมุด" : "ปักหมุดกิจกรรม";
+
+        document.getElementById("share-btn-line").onclick = () => window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`, '_blank');
+        document.getElementById("share-btn-fb").onclick = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        document.getElementById("share-btn-x").onclick = () => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`, '_blank');
+        document.getElementById("share-modal-google-action-btn").onclick = () => this.openGoogleCalendar(ev);
+
+        document.getElementById("share-modal").classList.remove("hidden");
+      },
+
+      closeShareModal() {
+        document.getElementById("share-modal").classList.add("hidden");
+      },
+
+      copyShareUrlFromInput() {
+        const inp = document.getElementById("share-link-input");
+        inp.select();
+        navigator.clipboard.writeText(inp.value).then(() => {
+          showToast("คัดลอกสำเร็จ", "คัดลอกลิงก์กิจกรรมลงคลิปบอร์ดแล้ว", "success");
+        }).catch(() => {
+          document.execCommand('copy');
+          showToast("คัดลอกสำเร็จ", "คัดลอกลิงก์กิจกรรมแล้ว", "success");
+        });
+      },
+
+      togglePinCurrentModalEvent() {
+        if (!state.activeModalEventId) return;
+        this.togglePin(state.activeModalEventId);
+        this.updateModalPinUI(state.activeModalEventId);
+      },
+
+      togglePinFromShareModal() {
+        if (!state.activeModalEventId) return;
+        this.togglePin(state.activeModalEventId);
+        const isPinned = state.pinnedEventIds.includes(state.activeModalEventId);
+        document.getElementById("share-modal-pin-label").textContent = isPinned ? "ยกเลิกปักหมุด" : "ปักหมุดกิจกรรม";
+      },
+
+      togglePin(id) {
+        const idx = state.pinnedEventIds.indexOf(id);
+        if (idx > -1) {
+          state.pinnedEventIds.splice(idx, 1);
+          showToast("ยกเลิกปักหมุด", "นำกิจกรรมออกจากรายการปักหมุดแล้ว", "info");
+        } else {
+          state.pinnedEventIds.push(id);
+          showToast("ปักหมุดสำเร็จ ⭐", "ปักหมุดกิจกรรมนี้ไว้ในเครื่องของคุณแล้ว", "success");
+        }
+        localStorage.setItem('pinned_events', JSON.stringify(state.pinnedEventIds));
+        this.renderEventCards();
+      },
+
+      updateModalPinUI(id) {
+        const isPinned = state.pinnedEventIds.includes(id);
+        const btn = document.getElementById("modal-pin-btn");
+        const icon = document.getElementById("modal-pin-icon");
+        const text = document.getElementById("modal-pin-text");
+        if (isPinned) {
+          btn.className = "px-3 py-1.5 rounded-xl border border-amber-400 bg-amber-50 text-xs font-bold text-amber-800 transition flex items-center space-x-1 shrink-0";
+          icon.className = "fa-solid fa-star text-amber-500";
+          text.textContent = "ปักหมุดแล้ว";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-amber-50 transition flex items-center space-x-1 shrink-0";
+          icon.className = "fa-regular fa-star";
+          text.textContent = "ปักหมุด";
+        }
+      },
+
+      openGoogleCalendar(ev) {
+        if (!ev) return;
+        const fmt = (d) => new Date(d).toISOString().replace(/-|:|\.\d+/g, '');
+        const s = fmt(ev.startTime);
+        const e = fmt(ev.endTime);
+        const title = encodeURIComponent(ev.title);
+        const details = encodeURIComponent(`${ev.desc || ''}\n\nจัดโดย: ${ev.dept || 'ฝ่ายวิชาการ'}`);
+        const loc = encodeURIComponent(ev.location || '');
+        window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${s}/${e}&details=${details}&location=${loc}`, '_blank');
+      }
+    };
+
+    // Admin Authentication & Sub-panes
+    const adminAuth = {
+      handleLogin(e) {
+        e.preventDefault();
+        const pwd = document.getElementById("admin-password-input").value;
+        if (pwd === state.adminSession.passwordHash) {
+          document.getElementById("admin-login-screen").classList.add("hidden");
+          document.getElementById("admin-console-screen").classList.remove("hidden");
+          adminEvents.renderTable();
+          adminStudents.renderTable();
+          adminStagesConfig.renderList();
+          showToast("เข้าสู่ระบบสำเร็จ", "ยินดีต้อนรับสู่แดชบอร์ดผู้ดูแล", "success");
+        } else {
+          showToast("รหัสผ่านไม่ถูกต้อง", "กรุณาตรวจสอบรหัสผ่านอีกครั้ง", "error");
+        }
+      },
+
+      logout() {
+        showConfirmModal("ออกจากระบบ", "คุณต้องการออกจากระบบผู้ดูแลใช่หรือไม่?", () => {
+          document.getElementById("admin-password-input").value = "";
+          document.getElementById("admin-console-screen").classList.add("hidden");
+          document.getElementById("admin-login-screen").classList.remove("hidden");
+          showToast("ออกจากระบบแล้ว", "ออกจากแดชบอร์ดผู้ดูแลเรียบร้อย", "info");
+        });
+      },
+
+      togglePasswordVisibility() {
+        const inp = document.getElementById("admin-password-input");
+        const icon = document.getElementById("pwd-eye-icon");
+        if (inp.type === "password") {
+          inp.type = "text";
+          icon.className = "fa-solid fa-eye-slash";
+        } else {
+          inp.type = "password";
+          icon.className = "fa-solid fa-eye";
+        }
+      },
+
+      openChangePasswordModal() {
+        document.getElementById("change-password-modal").classList.remove("hidden");
+      },
+
+      closeChangePasswordModal() {
+        document.getElementById("change-password-modal").classList.add("hidden");
+      },
+
+      handleChangePassword(e) {
+        e.preventDefault();
+        const oldP = document.getElementById("old-pwd-input").value;
+        const newP = document.getElementById("new-pwd-input").value;
+        const confP = document.getElementById("confirm-new-pwd-input").value;
+        const errEl = document.getElementById("change-pwd-error");
+
+        if (oldP !== state.adminSession.passwordHash) {
+          errEl.textContent = "รหัสผ่านเดิมไม่ถูกต้อง";
+          errEl.classList.remove("hidden");
+          return;
+        }
+        if (newP !== confP) {
+          errEl.textContent = "รหัสผ่านใหม่และยืนยันไม่ตรงกัน";
+          errEl.classList.remove("hidden");
+          return;
+        }
+
+        state.adminSession.passwordHash = newP;
+        this.closeChangePasswordModal();
+        showToast("เปลี่ยนรหัสผ่านสำเร็จ", "บันทึกรหัสผ่านใหม่เรียบร้อยแล้ว", "success");
+      }
+    };
+
+    const adminConsole = {
+      switchSubTab(sub) {
+        ['events', 'students', 'stages', 'appearance', 'backup'].forEach(s => {
+          const pane = document.getElementById(`adminsub-${s}`);
+          if (pane) pane.classList.toggle("hidden", s !== sub);
+          const btn = document.getElementById(`subnav-${s}`);
+          if (btn) {
+            btn.className = s === sub
+              ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white whitespace-nowrap shadow-sm"
+              : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap";
+          }
+        });
+      }
+    };
+
+    const adminEvents = {
+      openCreateModal(datePreset = null) {
+        document.getElementById("event-form-modal-title").textContent = "เพิ่มกิจกรรมใหม่";
+        document.getElementById("form-event-id").value = "";
+        document.getElementById("form-event-title").value = "";
+        document.getElementById("form-event-location").value = "";
+        document.getElementById("form-event-dept").value = "";
+        document.getElementById("form-event-desc").value = "";
+        document.getElementById("form-event-featured").checked = false;
+        document.getElementById("form-cover-data").value = "";
+        this.updateCoverPreview(null);
+
+        const startIso = datePreset ? `${datePreset}T09:00` : new Date(Date.now() + 86400000).toISOString().slice(0, 16);
+        const endIso = datePreset ? `${datePreset}T16:00` : new Date(Date.now() + 86400000 + 14400000).toISOString().slice(0, 16);
+        document.getElementById("form-event-start").value = startIso;
+        document.getElementById("form-event-end").value = endIso;
+
+        document.getElementById("event-form-modal").classList.remove("hidden");
+      },
+
+      openEditModal(id) {
+        const ev = state.events.find(x => x.id === id);
+        if (!ev) return;
+        document.getElementById("event-form-modal-title").textContent = "แก้ไขกิจกรรม";
+        document.getElementById("form-event-id").value = ev.id;
+        document.getElementById("form-event-title").value = ev.title;
+        document.getElementById("form-event-category").value = ev.category;
+        document.getElementById("form-event-location").value = ev.location || "";
+        document.getElementById("form-event-dept").value = ev.dept || "";
+        document.getElementById("form-event-desc").value = ev.desc || "";
+        document.getElementById("form-event-featured").checked = !!ev.featured;
+        document.getElementById("form-cover-data").value = ev.coverImage || "";
+
+        document.getElementById("form-event-start").value = new Date(ev.startTime).toISOString().slice(0, 16);
+        document.getElementById("form-event-end").value = new Date(ev.endTime).toISOString().slice(0, 16);
+
+        this.updateCoverPreview(ev.coverImage);
+        document.getElementById("event-form-modal").classList.remove("hidden");
+      },
+
+      closeModal() {
+        document.getElementById("event-form-modal").classList.add("hidden");
+      },
+
+      updateCoverPreview(url) {
+        const preview = document.getElementById("form-cover-preview");
+        const empty = document.getElementById("form-cover-empty-placeholder");
+        if (url) {
+          preview.src = url;
+          preview.classList.remove("hidden");
+          empty.classList.add("hidden");
+        } else {
+          preview.src = "";
+          preview.classList.add("hidden");
+          empty.classList.remove("hidden");
+        }
+      },
+
+      handleCoverUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          document.getElementById("form-cover-data").value = evt.target.result;
+          adminEvents.updateCoverPreview(evt.target.result);
+        };
+        reader.readAsDataURL(file);
+      },
+
+      removeCoverImage() {
+        document.getElementById("form-cover-data").value = "";
+        document.getElementById("form-event-file").value = "";
+        this.updateCoverPreview(null);
+      },
+
+      saveEvent(e) {
+        e.preventDefault();
+        const id = document.getElementById("form-event-id").value || `evt-${Date.now()}`;
+        const title = document.getElementById("form-event-title").value.trim();
+        const category = document.getElementById("form-event-category").value;
+        const startTime = new Date(document.getElementById("form-event-start").value).toISOString();
+        const endTime = new Date(document.getElementById("form-event-end").value).toISOString();
+        const location = document.getElementById("form-event-location").value.trim();
+        const dept = document.getElementById("form-event-dept").value.trim();
+        const desc = document.getElementById("form-event-desc").value.trim();
+        const featured = document.getElementById("form-event-featured").checked;
+        const coverImage = document.getElementById("form-cover-data").value || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&q=80";
+
+        const existingIdx = state.events.findIndex(x => x.id === id);
+        const newObj = { id, title, category, startTime, endTime, location, dept, desc, featured, coverImage };
+
+        if (existingIdx > -1) {
+          state.events[existingIdx] = newObj;
+        } else {
+          state.events.unshift(newObj);
+        }
+
+        this.closeModal();
+        this.renderTable();
+        app.renderEventCards();
+        calendarView.render();
+        showToast("บันทึกสำเร็จ", `บันทึกข้อมูล "${title}" เรียบร้อย`, "success");
+      },
+
+      renderTable() {
+        const tbody = document.getElementById("admin-events-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = state.events.map(e => `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="p-3.5"><img src="${e.coverImage}" class="w-12 h-9 rounded-lg object-cover shadow-sm"></td>
+            <td class="p-3.5 font-bold text-slate-800">
+              ${e.title}
+              ${e.featured ? '<span class="ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Featured</span>' : ''}
+            </td>
+            <td class="p-3.5 text-xs text-slate-500 font-mono">${e.category}</td>
+            <td class="p-3.5 text-xs text-slate-600">${new Date(e.startTime).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">เปิดใช้งาน</span></td>
+            <td class="p-3.5 text-right space-x-2 whitespace-nowrap">
+              <button onclick="adminEvents.openEditModal('${e.id}')" class="text-blue-600 font-semibold hover:underline text-xs">แก้ไข</button>
+              <button onclick="adminEvents.deleteEvent('${e.id}')" class="text-rose-600 font-semibold hover:underline text-xs">ลบ</button>
+            </td>
+          </tr>
+        `).join('');
+      },
+
+      deleteEvent(id) {
+        showConfirmModal("ลบกิจกรรม", "คุณต้องการลบกิจกรรมนี้ออกจากระบบใช่หรือไม่?", () => {
+          state.events = state.events.filter(x => x.id !== id);
+          adminEvents.renderTable();
+          app.renderEventCards();
+          calendarView.render();
+          showToast("ลบข้อมูลสำเร็จ", "ลบกิจกรรมเรียบร้อยแล้ว", "info");
+        });
+      }
+    };
+
+    const adminStudents = {
+      openCreateModal() {
+        document.getElementById("form-student-name").value = "";
+        document.getElementById("form-student-code").value = "";
+        document.getElementById("form-student-course").value = "";
+        document.getElementById("form-student-topic").value = "";
+        document.getElementById("student-form-modal").classList.remove("hidden");
+      },
+
+      closeModal() {
+        document.getElementById("student-form-modal").classList.add("hidden");
+      },
+
+      saveStudent(e) {
+        e.preventDefault();
+        const name = document.getElementById("form-student-name").value.trim();
+        const code = document.getElementById("form-student-code").value.trim();
+        const course = document.getElementById("form-student-course").value.trim();
+        const topic = document.getElementById("form-student-topic").value.trim();
+
+        state.students.push({ id: `std-${Date.now()}`, name, code, course, topic, status: "WAITING" });
+        this.closeModal();
+        this.renderTable();
+        showToast("บันทึกสำเร็จ", `เพิ่ม ${name} ในคิวสอบแล้ว`, "success");
+      },
+
+      selectCandidate(id) {
+        const std = state.students.find(s => s.id === id);
+        if (!std) return;
+        state.currentStudentId = id;
+        document.getElementById("timer-student-name").textContent = `${std.name} (${std.course || 'ไม่ระบุวิชา'})`;
+        document.getElementById("timer-student-topic").textContent = `หัวข้อ: ${std.topic}`;
+        this.renderTable();
+        timerEngine.reset();
+        showToast("โหลดคิวสอบสำเร็จ", `พร้อมสำหรับการสอบสอนของ ${std.name}`, "success");
+      },
+
+      deleteStudent(id) {
+        showConfirmModal("ลบนักศึกษา", "คุณต้องการลบรายชื่อนักศึกษานี้ออกจากคิวใช่หรือไม่?", () => {
+          state.students = state.students.filter(s => s.id !== id);
+          if (state.currentStudentId === id) {
+            state.currentStudentId = state.students[0]?.id || null;
+            if (state.currentStudentId) {
+              adminStudents.selectCandidate(state.currentStudentId);
+            } else {
+              document.getElementById("timer-student-name").textContent = "ยังไม่ได้เลือกผู้เข้าสอบ";
+              document.getElementById("timer-student-topic").textContent = "หัวข้อ: -";
+            }
+          }
+          this.renderTable();
+          showToast("ลบสำเร็จ", "นำรายชื่อออกจากคิวเรียบร้อย", "info");
+        });
+      },
+
+      clearAllStudents() {
+        if (state.students.length === 0) {
+          showToast("ไม่มีข้อมูล", "ขณะนี้ไม่มีรายชื่อนักศึกษาในระบบ", "info");
+          return;
+        }
+        showConfirmModal(
+          "ยืนยันการล้างรายชื่อทั้งหมด",
+          `คุณต้องการลบรายชื่อนักศึกษาทั้งหมดจำนวน ${state.students.length} คน ออกจากระบบใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`,
+          () => {
+            state.students = [];
+            state.currentStudentId = null;
+            document.getElementById("timer-student-name").textContent = "ยังไม่ได้เลือกผู้เข้าสอบ";
+            document.getElementById("timer-student-topic").textContent = "หัวข้อ: -";
+            adminStudents.renderTable();
+            timerEngine.reset();
+            showToast("ล้างข้อมูลสำเร็จ", "ลบรายชื่อนักศึกษาทั้งหมดเรียบร้อยแล้ว", "success");
+          }
+        );
+      },
+
+      downloadTemplate() {
+        const headers = "ชื่อ-นามสกุล,รหัสนักศึกษา,วิชาหรือกลุ่มเรียน,หัวข้อสอบสอน\n";
+        const row1 = "นางสาวศิริพร ปัญญาไว,6501123401,คณิตศาสตร์ ม.3,ทฤษฎีบทพีทาโกรัสกับการแก้โจทย์ปัญหาในชีวิตประจำวัน\n";
+        const row2 = "นายธนพล รุ่งเรืองกิจ,6501123402,คณิตศาสตร์ ม.4,ฟังก์ชันตรีโกณมิติและการประยุกต์ทางเรขาคณิต\n";
+        const row3 = "นางสาวพิมพ์ชนก รักษ์ศิลป์,6501123403,คณิตศาสตร์ ม.2,การแปลงทางเรขาคณิต: การเลื่อนขนานและการสะท้อน\n";
+        const csvContent = "\uFEFF" + headers + row1 + row2 + row3;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "แม่แบบรายชื่อนักศึกษาสอบสอน.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("ดาวน์โหลดแม่แบบสำเร็จ", "บันทึกไฟล์ แม่แบบรายชื่อนักศึกษาสอบสอน.csv แล้ว", "success");
+      },
+
+      handleFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const text = evt.target.result;
+            const lines = text.split(/\r?\n/);
+            if (lines.length < 2) {
+              showToast("ไฟล์ไม่มีข้อมูล", "ไม่พบแถวข้อมูลนักศึกษาในไฟล์ที่นำเข้า", "error");
+              return;
+            }
+
+            const parseCSVLine = (line) => {
+              const res = [];
+              let cur = '';
+              let inQuotes = false;
+              for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                if (c === '"') {
+                  if (inQuotes && line[i + 1] === '"') {
+                    cur += '"';
+                    i++;
+                  } else {
+                    inQuotes = !inQuotes;
+                  }
+                } else if (c === ',' && !inQuotes) {
+                  res.push(cur.trim());
+                  cur = '';
+                } else {
+                  cur += c;
+                }
+              }
+              res.push(cur.trim());
+              return res;
+            };
+
+            const headerRow = parseCSVLine(lines[0]).map(h => h.replace(/^\uFEFF/, '').trim());
+            let nameIdx = 0;
+            let codeIdx = 1;
+            let courseIdx = 2;
+            let topicIdx = 3;
+
+            const isHeader = headerRow.some(h => /ชื่อ|name|รหัส|code|วิชา|course|หัวข้อ|topic/i.test(h));
+            let startIdx = 0;
+            if (isHeader) {
+              startIdx = 1;
+              headerRow.forEach((h, idx) => {
+                if (/ชื่อ|name/i.test(h)) nameIdx = idx;
+                else if (/รหัส|code/i.test(h)) codeIdx = idx;
+                else if (/วิชา|สาขา|กลุ่ม|course/i.test(h)) courseIdx = idx;
+                else if (/หัวข้อ|เรื่อง|topic/i.test(h)) topicIdx = idx;
+              });
+            }
+
+            const imported = [];
+            for (let i = startIdx; i < lines.length; i++) {
+              const line = lines[i].trim();
+              if (!line) continue;
+              const cols = parseCSVLine(line);
+              const name = cols[nameIdx] || '';
+              if (!name) continue;
+              const code = cols[codeIdx] || '';
+              const course = cols[courseIdx] || '';
+              const topic = cols[topicIdx] || 'ไม่ระบุหัวข้อสอบสอน';
+
+              imported.push({
+                id: `std-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+                name,
+                code,
+                course,
+                topic,
+                status: 'WAITING'
+              });
+            }
+
+            if (imported.length === 0) {
+              showToast("ไม่พบข้อมูลที่ถูกต้อง", "กรุณาตรวจสอบรูปแบบไฟล์ตามแม่แบบที่ดาวน์โหลด", "error");
+              return;
+            }
+
+            showConfirmModal(
+              "ยืนยันการนำเข้าข้อมูล",
+              `พบข้อมูลนักศึกษาจำนวน ${imported.length} คน คุณต้องการนำเข้าข้อมูลเพิ่มต่อจากรายชื่อเดิมหรือไม่?`,
+              () => {
+                state.students = [...state.students, ...imported];
+                adminStudents.renderTable();
+                showToast("นำเข้าสำเร็จ", `เพิ่มนักศึกษาจำนวน ${imported.length} คน เข้าสู่ระบบแล้ว`, "success");
+              }
+            );
+          } catch (err) {
+            console.error(err);
+            showToast("เกิดข้อผิดพลาด", "ไม่สามารถอ่านไฟล์ CSV ได้ กรุณาลองใหม่อีกครั้ง", "error");
+          } finally {
+            e.target.value = '';
+          }
+        };
+        reader.readAsText(file, "UTF-8");
+      },
+
+      renderTable() {
+        const tbody = document.getElementById("admin-students-table-body");
+        if (!tbody) return;
+        if (state.students.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center py-12 text-slate-400">
+                <i class="fa-regular fa-folder-open text-3xl mb-2 block text-slate-300"></i>
+                ยังไม่มีรายชื่อนักศึกษาในระบบ (สามารถกดปุ่ม "นำเข้าไฟล์" หรือ "เพิ่มนักศึกษา" ได้)
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        tbody.innerHTML = state.students.map((st, idx) => {
+          const isCurrent = st.id === state.currentStudentId;
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3.5 font-mono text-xs">${idx + 1}</td>
+              <td class="p-3.5">
+                <div class="font-bold text-slate-800">${st.name}</div>
+                <div class="text-[11px] text-slate-500">${st.course || '-'}</div>
+              </td>
+              <td class="p-3.5 text-xs text-slate-600 font-mono">${st.code || '-'}</td>
+              <td class="p-3.5 text-xs text-slate-700 max-w-xs">${st.topic}</td>
+              <td class="p-3.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isCurrent ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">
+                  ${isCurrent ? 'กำลังสอบสอน' : 'รอเข้าสอบ'}
+                </span>
+              </td>
+              <td class="p-3.5 text-right space-x-2 whitespace-nowrap">
+                ${isCurrent ? 
+                  '<button class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow-sm cursor-default">ผู้เข้าสอบปัจจุบัน</button>' : 
+                  `<button onclick="adminStudents.selectCandidate('${st.id}')" class="px-3 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-100">เลือกเข้าสอบ</button>`
+                }
+                <button onclick="adminStudents.deleteStudent('${st.id}')" class="text-rose-600 font-semibold hover:underline text-xs">ลบ</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    };
+
+    // SubTab 3: Teaching Stages Configuration Engine
+    const adminStagesConfig = {
+      applyPreset(totalMins) {
+        if (totalMins === 15) {
+          state.timer.stages = [...SEED_STAGES];
+        } else {
+          const count = 4;
+          const portion = Math.floor(totalMins / count);
+          state.timer.stages = [
+            { name: "ขั้นนำเข้าสู่บทเรียน", durationMinutes: Math.max(1, portion) },
+            { name: "ขั้นจัดกิจกรรมการเรียนรู้", durationMinutes: Math.max(1, portion * 2) },
+            { name: "ขั้นสรุปบทเรียน", durationMinutes: Math.max(1, portion) },
+            { name: "ขั้นประเมินผลและตอบข้อซักถาม", durationMinutes: Math.max(1, totalMins - (portion * 4)) }
+          ];
+        }
+        this.renderList();
+        showToast("เลือกพรีเซ็ตสำเร็จ", `ปรับขั้นตอนตามพรีเซ็ต ${totalMins} นาทีเรียบร้อย`, "info");
+      },
+
+      addStageRow() {
+        state.timer.stages.push({
+          name: `ขั้นตอนที่ ${state.timer.stages.length + 1}`,
+          durationMinutes: 3
+        });
+        this.renderList();
+      },
+
+      removeStageRow(idx) {
+        if (state.timer.stages.length <= 1) {
+          showToast("ไม่สามารถลบได้", "ต้องมีขั้นตอนการสอนอย่างน้อย 1 ขั้นตอน", "error");
+          return;
+        }
+        state.timer.stages.splice(idx, 1);
+        this.renderList();
+      },
+
+      renderList() {
+        const container = document.getElementById("admin-stages-editor-list");
+        if (!container) return;
+        container.innerHTML = "";
+        let total = 0;
+
+        state.timer.stages.forEach((st, idx) => {
+          total += st.durationMinutes;
+          const div = document.createElement("div");
+          div.className = "flex items-center space-x-3 p-2.5 rounded-xl border border-slate-200 bg-white";
+          div.innerHTML = `
+            <span class="w-7 text-center font-bold text-slate-500 text-xs font-mono">${idx + 1}</span>
+            <input type="text" value="${st.name}" oninput="state.timer.stages[${idx}].name = this.value" placeholder="ชื่อขั้นตอน..." class="flex-1 px-3 py-2 rounded-lg border text-xs outline-none focus:border-blue-500" />
+            <div class="flex items-center space-x-1 shrink-0">
+              <input type="number" min="1" max="120" value="${st.durationMinutes}" oninput="adminStagesConfig.updateDuration(${idx}, this.value)" class="w-16 px-2 py-2 rounded-lg border text-xs font-mono text-center outline-none" />
+              <span class="text-xs text-slate-500 font-medium">นาที</span>
+            </div>
+            <button onclick="adminStagesConfig.removeStageRow(${idx})" class="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          `;
+          container.appendChild(div);
+        });
+
+        const totalEl = document.getElementById("admin-stages-total-display");
+        if (totalEl) totalEl.textContent = `${total} นาที`;
+      },
+
+      updateDuration(idx, val) {
+        state.timer.stages[idx].durationMinutes = parseInt(val, 10) || 1;
+        let total = 0;
+        state.timer.stages.forEach(s => total += s.durationMinutes);
+        const totalEl = document.getElementById("admin-stages-total-display");
+        if (totalEl) totalEl.textContent = `${total} นาที`;
+      },
+
+      saveStages() {
+        timerEngine.calculateStageTimeline();
+        timerEngine.reset();
+        timerEngine.renderStagesList();
+        showToast("บันทึกขั้นตอนสำเร็จ", "อัปเดตขั้นตอนและระยะเวลาไปยังนาฬิกาสอบสอนเรียบร้อย", "success");
+      }
+    };
+
+    // SubTab 4: Appearance & 12 Curated Palettes
+    const appearanceManager = {
+      presets: [
+        {
+          id: 'academicBlue',
+          name: 'Academic Blue',
+          primary: '#1e3a8a', secondary: '#3b82f6', accent: '#f59e0b', bg: '#f8fafc',
+          card: '#ffffff', text: '#0f172a', header: '#172554', nav: '#1e40af', button: '#2563eb', footer: '#0f172a',
+          dark: false
+        },
+        {
+          id: 'royalPurple',
+          name: 'Royal Purple',
+          primary: '#581c87', secondary: '#8b5cf6', accent: '#ec4899', bg: '#faf5ff',
+          card: '#ffffff', text: '#1e1b4b', header: '#3b0764', nav: '#6b21a8', button: '#7c3aed', footer: '#1e1b4b',
+          dark: false
+        },
+        {
+          id: 'emeraldGreen',
+          name: 'Emerald Green',
+          primary: '#064e3b', secondary: '#10b981', accent: '#f59e0b', bg: '#f0fdf4',
+          card: '#ffffff', text: '#06281e', header: '#022c22', nav: '#047857', button: '#059669', footer: '#022c22',
+          dark: false
+        },
+        {
+          id: 'modernDark',
+          name: 'Modern Dark',
+          primary: '#3b82f6', secondary: '#60a5fa', accent: '#38bdf8', bg: '#0b0f19',
+          card: '#151e32', text: '#f8fafc', header: '#070a12', nav: '#0f172a', button: '#2563eb', footer: '#070a12',
+          dark: true
+        },
+        {
+          id: 'minimalWhite',
+          name: 'Minimal White',
+          primary: '#334155', secondary: '#64748b', accent: '#0284c7', bg: '#f8fafc',
+          card: '#ffffff', text: '#0f172a', header: '#ffffff', nav: '#f1f5f9', button: '#0f172a', footer: '#0f172a',
+          dark: false
+        },
+        {
+          id: 'pastelSweet',
+          name: 'Pastel Sweet',
+          primary: '#db2777', secondary: '#f472b6', accent: '#fbcfe8', bg: '#fff1f2',
+          card: '#ffffff', text: '#4c0519', header: '#831843', nav: '#be185d', button: '#db2777', footer: '#831843',
+          dark: false
+        },
+        {
+          id: 'earthToneWarm',
+          name: 'Earth Tone Warm',
+          primary: '#78350f', secondary: '#d97706', accent: '#f59e0b', bg: '#fefce8',
+          card: '#ffffff', text: '#451a03', header: '#451a03', nav: '#92400e', button: '#b45309', footer: '#451a03',
+          dark: false
+        },
+        {
+          id: 'neoMintTeal',
+          name: 'Neo Mint Teal',
+          primary: '#0d9488', secondary: '#14b8a6', accent: '#2dd4bf', bg: '#f0fdfa',
+          card: '#ffffff', text: '#134e4a', header: '#115e59', nav: '#0f766e', button: '#0d9488', footer: '#115e59',
+          dark: false
+        },
+        {
+          id: 'cyberpunkNeon',
+          name: 'Cyberpunk Neon',
+          primary: '#06b6d4', secondary: '#ec4899', accent: '#a855f7', bg: '#05050a',
+          card: '#12121f', text: '#f8fafc', header: '#090915', nav: '#181829', button: '#ec4899', footer: '#090915',
+          dark: true
+        },
+        {
+          id: 'sunsetCoral',
+          name: 'Sunset Coral',
+          primary: '#c2410c', secondary: '#fb923c', accent: '#fdba74', bg: '#fff7ed',
+          card: '#ffffff', text: '#431407', header: '#7c2d12', nav: '#9a3412', button: '#ea580c', footer: '#7c2d12',
+          dark: false
+        },
+        {
+          id: 'nordicSlate',
+          name: 'Nordic Slate',
+          primary: '#475569', secondary: '#94a3b8', accent: '#38bdf8', bg: '#f1f5f9',
+          card: '#ffffff', text: '#0f172a', header: '#1e293b', nav: '#334155', button: '#475569', footer: '#1e293b',
+          dark: false
+        },
+        {
+          id: 'midnightOled',
+          name: 'Midnight OLED',
+          primary: '#38bdf8', secondary: '#818cf8', accent: '#c084fc', bg: '#020617',
+          card: '#0b0f19', text: '#f8fafc', header: '#020617', nav: '#0f172a', button: '#38bdf8', footer: '#020617',
+          dark: true
+        }
+      ],
+
+      initPresets() {
+        const container = document.getElementById("color-presets-grid");
+        if (!container) return;
+        container.innerHTML = this.presets.map(p => `
+          <button onclick="appearanceManager.applyPreset('${p.id}')" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition text-left flex flex-col justify-between">
+            <div class="w-full h-7 rounded-lg mb-2 flex overflow-hidden shadow-inner">
+              <div class="flex-1" style="background-color: ${p.primary};"></div>
+              <div class="flex-1" style="background-color: ${p.secondary};"></div>
+              <div class="flex-1" style="background-color: ${p.accent};"></div>
+              <div class="flex-1" style="background-color: ${p.bg};"></div>
+            </div>
+            <span class="text-[11px] font-bold text-slate-800 truncate">${p.name}</span>
+          </button>
+        `).join('');
+      },
+
+      applyPreset(id) {
+        const p = this.presets.find(x => x.id === id);
+        if (!p) return;
+        ['primary', 'secondary', 'accent', 'bg', 'card', 'text', 'header', 'nav', 'button', 'footer'].forEach(k => {
+          const inEl = document.getElementById(`color-${k}`);
+          const hexEl = document.getElementById(`color-${k}-hex`);
+          if (inEl) inEl.value = p[k];
+          if (hexEl) hexEl.value = p[k];
+        });
+        this.previewColorChange();
+        showToast("เลือกชุดสีแล้ว", `แสดงตัวอย่างชุดสี ${p.name} เรียบร้อย (กดบันทึกเพื่อใช้งานถาวร)`, "info");
+      },
+
+      syncHexToColor(key) {
+        const hex = document.getElementById(`color-${key}-hex`).value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+          document.getElementById(`color-${key}`).value = hex;
+          this.previewColorChange();
+        }
+      },
+
+      previewColorChange() {
+        const tokens = ['primary', 'secondary', 'accent', 'bg', 'card', 'text', 'header', 'nav', 'button', 'footer'];
+        tokens.forEach(k => {
+          const val = document.getElementById(`color-${k}`).value;
+          document.documentElement.style.setProperty(`--color-${k}`, val);
+          const hexEl = document.getElementById(`color-${k}-hex`);
+          if (hexEl) hexEl.value = val;
+        });
+
+        // Dynamic High-Contrast & Luminance Check
+        const bgVal = document.getElementById("color-bg").value;
+        let textVal = document.getElementById("color-text").value;
+
+        const rgb = parseInt(bgVal.slice(1), 16);
+        const r = (rgb >> 16) & 0xff;
+        const g = (rgb >> 8) & 0xff;
+        const b = rgb & 0xff;
+        const bgLum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        const isDark = bgLum < 128;
+
+        const textRgb = parseInt(textVal.slice(1), 16);
+        const tr = (textRgb >> 16) & 0xff;
+        const tg = (textRgb >> 8) & 0xff;
+        const tb = textRgb & 0xff;
+        const textLum = 0.2126 * tr + 0.7152 * tg + 0.0722 * tb;
+
+        if (isDark) {
+          document.documentElement.classList.add('dark', 'theme-dark-mode');
+          if (textLum < 128) {
+            textVal = '#f8fafc';
+            document.documentElement.style.setProperty('--color-text', textVal);
+            document.getElementById("color-text").value = textVal;
+            document.getElementById("color-text-hex").value = textVal;
+          }
+        } else {
+          document.documentElement.classList.remove('dark', 'theme-dark-mode');
+          if (textLum >= 128) {
+            textVal = '#0f172a';
+            document.documentElement.style.setProperty('--color-text', textVal);
+            document.getElementById("color-text").value = textVal;
+            document.getElementById("color-text-hex").value = textVal;
+          }
+        }
+
+        calendarView.render();
+        timerEngine.drawAnalogClock();
+        app.renderEventCards();
+      },
+
+      saveThemeSettings() {
+        this.previewColorChange();
+        const titleInput = document.getElementById("site-title-input");
+        if (titleInput && titleInput.value.trim()) {
+          document.getElementById("site-title-display").textContent = titleInput.value.trim();
+        }
+        showToast("บันทึกการปรับแต่งสำเร็จ", "บันทึกและปรับใช้การตั้งค่าเว็บไซต์เรียบร้อยแล้ว", "success");
+      },
+
+      cancelThemeChanges() {
+        this.applyPreset('academicBlue');
+        showToast("ยกเลิกแล้ว", "คืนค่าชุดสีเป็น Academic Blue", "info");
+      },
+
+      resetDefaultTheme() {
+        showConfirmModal("คืนค่าเริ่มต้น", "คุณต้องการรีเซ็ตค่าสีทั้งหมดกลับเป็นค่ามาตรฐานหรือไม่?", () => {
+          this.applyPreset('academicBlue');
+          this.saveThemeSettings();
+          showToast("คืนค่าสำเร็จ", "รีเซ็ตเป็นค่ามาตรฐาน Academic Blue เรียบร้อย", "info");
+        });
+      },
+
+      handleLogoUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const logoUrl = evt.target.result;
+          appearanceManager.applyLogoToAll(logoUrl);
+          localStorage.setItem('site_custom_logo', logoUrl);
+          showToast("เปลี่ยนโลโก้สำเร็จ", "อัปเดตโลโก้ทุกจุดของระบบและหน้านาฬิกาแล้ว", "success");
+        };
+        reader.readAsDataURL(file);
+      },
+
+      removeLogo() {
+        showConfirmModal("ลบโลโก้", "คุณต้องการลบโลโก้และกลับไปใช้ตราสัญลักษณ์เริ่มต้นหรือไม่?", () => {
+          appearanceManager.applyLogoToAll(null);
+          localStorage.removeItem('site_custom_logo');
+          document.getElementById("logo-file-input").value = "";
+          showToast("คืนค่าโลโก้แล้ว", "กลับไปใช้ตราสัญลักษณ์เริ่มต้นของระบบ", "info");
+        });
+      },
+
+      applyLogoToAll(logoUrl) {
+        const customElements = [
+          document.getElementById("custom-logo-img"),
+          document.getElementById("preview-custom-logo"),
+          document.getElementById("timer-custom-logo-img"),
+          document.getElementById("pres-custom-logo-img")
+        ];
+        const defaultElements = [
+          document.getElementById("default-logo-svg"),
+          document.getElementById("preview-default-logo"),
+          document.getElementById("timer-default-logo-svg"),
+          document.getElementById("pres-default-logo-svg")
+        ];
+
+        if (logoUrl) {
+          customElements.forEach(el => {
+            if (el) {
+              el.src = logoUrl;
+              el.classList.remove("hidden");
+            }
+          });
+          defaultElements.forEach(el => {
+            if (el) el.classList.add("hidden");
+          });
+        } else {
+          customElements.forEach(el => {
+            if (el) {
+              el.src = "";
+              el.classList.add("hidden");
+            }
+          });
+          defaultElements.forEach(el => {
+            if (el) el.classList.remove("hidden");
+          });
+        }
+      }
+    };
+
+    const backupManager = {
+      exportEventsJSON() {
+        const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.events, null, 2));
+        const a = document.createElement('a');
+        a.href = str;
+        a.download = `academic-events-backup.json`;
+        a.click();
+        showToast("ส่งออกสำเร็จ", "ดาวน์โหลดไฟล์ JSON เรียบร้อยแล้ว", "success");
+      },
+
+      exportStudentsCSV() {
+        let csv = 'ชื่อ-นามสกุล,รหัสนักศึกษา,วิชาหรือกลุ่มเรียน,หัวข้อสอบสอน,สถานะ\n';
+        state.students.forEach(s => {
+          csv += `"${s.name || ''}","${s.code || ''}","${s.course || ''}","${(s.topic || '').replace(/"/g, '""')}","${s.status || ''}"\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `students-candidates-${Date.now()}.csv`;
+        a.click();
+        showToast("ส่งออกสำเร็จ", "ดาวน์โหลดไฟล์ CSV เรียบร้อยแล้ว", "success");
+      }
+    };
+
+    // Helper Dialog & Toast
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `p-4 rounded-2xl shadow-2xl flex items-start space-x-3 pointer-events-auto transition-all duration-300 text-xs sm:text-sm text-white ${
+        type === 'success' ? 'bg-emerald-700' : type === 'error' ? 'bg-rose-700' : 'bg-slate-900 border border-slate-700'
+      }`;
+      toast.innerHTML = `<div><div class="font-bold">${title}</div><div class="text-white/80 mt-0.5">${message}</div></div>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function showConfirmModal(title, message, onConfirm) {
+      const modal = document.getElementById("custom-confirm-modal");
+      document.getElementById("confirm-title").textContent = title;
+      document.getElementById("confirm-message").textContent = message;
+      modal.classList.remove("hidden");
+      document.getElementById("confirm-cancel-btn").onclick = () => modal.classList.add("hidden");
+      document.getElementById("confirm-ok-btn").onclick = () => {
+        modal.classList.add("hidden");
+        onConfirm();
+      };
+    }
+
+    // Bootstrap Application
+    window.addEventListener('DOMContentLoaded', () => {
+      app.init();
+    });
+  </script>
+</body>
+</html>
